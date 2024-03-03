@@ -15,17 +15,18 @@ import datetime
 
 class OpenWeather:
 
-    def __init__(self, zipcode, ccode):
+    def __init__(self, zipcode, ccode) -> None:
         self.zipcode = zipcode
         self.ccode = ccode
 
     def set_apikey(self, apikey:str) -> None:
         self.apikey = apikey
 
-    def load_data(self) -> None:
+    def load_data(self) -> dict:
         response = None
         r_obj = None
-        request_url = f"http://api.openweathermap.org/data/2.5/weather?zip={zip},{self.ccode}&appid={self.apikey}"
+        request_url = str("http://api.openweathermap.org/data/2.5/weather?zip=" +
+                          self.zipcode + "," + self.ccode + "&appid=" + self.apikey)
 
         try:
             response = urllib.request.urlopen(request_url)
@@ -37,7 +38,7 @@ class OpenWeather:
             self.low_temperature = r_obj["main"]["temp_min"]
             self.longitude = r_obj["coord"]["lon"]
             self.latitude = r_obj["coord"]["lat"]
-            self.description = r_obj["weather"]["description"]
+            self.description = r_obj["weather"][0]["description"]
             self.humidity = r_obj["main"]["humidity"]
             self.city = r_obj["name"]
             self.sunset = datetime.datetime.fromtimestamp(r_obj["sys"]["sunset"]).strftime('%H:%M')   

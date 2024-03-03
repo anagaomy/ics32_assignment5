@@ -1,4 +1,5 @@
 from OpenWeather import OpenWeather
+import json
 
 zipcode = "92697"
 ccode = "US"
@@ -6,7 +7,11 @@ apikey = "071481e600ad1194c116a0b9e95d56a8"
 
 open_weather = OpenWeather(zipcode, ccode)
 open_weather.set_apikey(apikey)
-open_weather.load_data()
+dict = open_weather.load_data()
+
+file_out = open('open_weather.json', "w")
+json.dump(dict, file_out, indent=4)
+file_out.close()
 
 print(f"The temperature for {zipcode} is {open_weather.temperature} degrees")
 print(f"The high for today in {zipcode} will be {open_weather.high_temperature} degrees")
