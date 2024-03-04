@@ -42,13 +42,7 @@ class LastFM:
             if parsed_response.get("error"):
                 error_code = parsed_response["error"]
                 error_message = parsed_response["message"]
-                # raise Exception(error_message)
-                if error_code == 10:
-                    raise Exception("Invalid API key. Check validity and try again.")
-                elif error_code == 6:
-                    raise Exception("Invalid parameters. Make sure all required parameters are included.")
-                else:
-                    raise Exception("An error has occurred. Please try again later.")
+                raise Exception(error_message)
             
             else:
                 track_list = []

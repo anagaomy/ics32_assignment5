@@ -5,6 +5,7 @@ import json
 username = "rj"
 apikey = "e05db7fa6efe7323ede21ee2e48c88f5"
 
+
 lastFM = LastFM(apikey)
 lastFM.set_user(username)
 lastFM.set_limit()
