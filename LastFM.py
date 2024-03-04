@@ -10,6 +10,7 @@ import urllib.request
 import urllib.error
 import requests.exceptions
 from datetime import datetime
+import random
 
 
 class LastFM:
@@ -75,13 +76,32 @@ class LastFM:
     
         else:
             track_list = []
+            date_list = []
+            artist_list = []
+            name_list = []
             for track in parsed_response["lovedtracks"]["track"]:
                 track_artist = track["artist"]["name"]
                 track_name = track["name"]
-                track_date = datetime.fromtimestamp(int(track["date"]["uts"])).strftime('%m/%d/%Y') 
+                track_date = datetime.fromtimestamp(int(track["date"]["uts"])).strftime('%m/%d/%Y')
+
+                artist_list.append(track_artist)
+                name_list.append(track_name)
+                date_list.append(track_date)
                 track_list.append(f"Artist: {track_artist}, Track: {track_name}, Loved on: {track_date}")
 
+            self.date = date_list
+            self.artist = artist_list
+            self.name = name_list
             self.tracks = track_list
+
+    def transclude(self, message: str) -> str:
+        keyword = '@lastfm'
+        if message.find(keyword) != -1:
+            msg_split = message.split(keyword)
+            index = random.randint(0, int(self.limit)-1)
+            transclude_weather = self.name[index]
+            new_message = msg_split[0] + transclude_weather + msg_split[1]
+        return new_message
 
 
 # def main() -> None:

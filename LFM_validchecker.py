@@ -30,3 +30,6 @@ print("--------------------------------------------------")
 for track in lastFM.tracks:
     print(track)
 print("--------------------------------------------------") 
+
+msg = lastFM.transclude("I am listening to @lastfm.")
+print(msg)

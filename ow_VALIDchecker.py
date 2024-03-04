@@ -24,3 +24,6 @@ print(f"The coordinates for {zipcode} are {open_weather.longitude} longitude and
 print(f"The current weather for {zipcode} is {open_weather.description}")
 print(f"The current humidity for {zipcode} is {open_weather.humidity}")
 print(f"The sun will set in {open_weather.city} at {open_weather.sunset}")
+
+msg = open_weather.transclude("Hello World! Today is the first day of the rest of my life. It is @weather today!")
+print(msg)

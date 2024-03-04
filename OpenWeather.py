@@ -70,7 +70,15 @@ class OpenWeather:
         self.description = r_obj["weather"][0]["description"]
         self.humidity = r_obj["main"]["humidity"]
         self.city = r_obj["name"]
-        self.sunset = datetime.datetime.fromtimestamp(r_obj["sys"]["sunset"]).strftime('%H:%M')   
+        self.sunset = datetime.datetime.fromtimestamp(r_obj["sys"]["sunset"]).strftime('%H:%M')
+
+    def transclude(self, message: str) -> str:
+        keyword = '@weather'
+        if message.find(keyword) != -1:
+            msg_split = message.split(keyword)
+            transclude_weather = self.description
+            new_message = msg_split[0] + transclude_weather + msg_split[1]
+        return new_message
 
 
 # def main() -> None:
