@@ -7,8 +7,12 @@ apikey = "071481e600ad1194c116a0b9e95d56a8"
 
 open_weather = OpenWeather(zipcode, ccode)
 open_weather.set_apikey(apikey)
-dict = open_weather.load_data()
+open_weather.load_data()
 
+url_to_download = str("http://api.openweathermap.org/data/2.5/weather?zip=" +
+                      zipcode + "," + ccode + "&appid=" + apikey)
+
+dict = open_weather._download_url(url_to_download)
 file_out = open('open_weather.json', "w")
 json.dump(dict, file_out, indent=4)
 file_out.close()

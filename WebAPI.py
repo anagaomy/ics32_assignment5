@@ -9,18 +9,23 @@ from abc import ABC, abstractmethod
 
 class WebAPI(ABC):
 
-  def _download_url(self, url: str) -> dict:
-    #TODO: Implement web api request code in a way that supports
-    # all types of web APIs
-    pass
+    def __init__():
+      # creates required class attribute apikey
+      # creates API specific class attributes like zip, ccode
+        pass
 
-  def set_apikey(self, apikey:str) -> None:
-    pass
+    def _download_url(self, url: str) -> dict:
+        #TODO: Implement web api request code in a way that supports
+        # all types of web APIs
+        pass
 
-  @abstractmethod
-  def load_data(self):
-    pass
+    def set_apikey(self, apikey:str) -> None:
+        pass
 
-  @abstractmethod
-  def transclude(self, message:str) -> str:
-    pass
+    @abstractmethod
+    def load_data(self):
+      pass
+
+    @abstractmethod
+    def transclude(self, message:str) -> str:
+        pass

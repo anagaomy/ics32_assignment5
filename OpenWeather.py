@@ -60,7 +60,7 @@ class OpenWeather:
         url_to_download = str("http://api.openweathermap.org/data/2.5/weather?zip=" +
                           self.zipcode + "," + self.ccode + "&appid=" + self.apikey)
 
-        r_obj = OpenWeather._download_url(url_to_download)
+        r_obj = OpenWeather._download_url(self, url_to_download)
 
         self.temperature = r_obj["main"]["temp"]
         self.high_temperature = r_obj["main"]["temp_max"]
