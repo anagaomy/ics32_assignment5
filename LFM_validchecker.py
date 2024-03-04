@@ -10,9 +10,13 @@ lastFM = LastFM(username)
 lastFM.set_apikey(apikey)
 lastFM.set_limit()
 lastFM.set_page()
+lastFM.load_data()
 
+url_to_download = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
+                      username + "&api_key=" + apikey + "&limit=" +
+                      lastFM.limit + "&page=" + lastFM.page + "&format=json")
 
-dict = lastFM.load_data()
+dict = lastFM._download_url(url_to_download)
 
 file_out = open('lastFM.json', "w")
 json.dump(dict, file_out, indent=4)

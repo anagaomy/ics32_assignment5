@@ -62,11 +62,11 @@ class LastFM:
         return parsed_response
 
     def load_data(self) -> None:
-        request_url = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
+        url_to_download = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
                           self.user + "&api_key=" + self.apikey + "&limit=" +
                           self.limit + "&page=" + self.page + "&format=json")
 
-        parsed_response = LastFM._download_url(request_url)
+        parsed_response = LastFM._download_url(self, url_to_download)
 
         if parsed_response.get("error"):
             error_code = parsed_response["error"]
