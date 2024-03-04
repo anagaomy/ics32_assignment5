@@ -14,11 +14,11 @@ from datetime import datetime
 
 class LastFM:
 
-    def __init__(self, apikey) -> None:
-        self.apikey = apikey
+    def __init__(self, user) -> None:
+        self.user = user
 
-    def set_user(self, user) -> None:
-        self.user = str(user)
+    def set_apikey(self, apikey:str) -> None:
+        self.apikey = str(apikey)
 
     def set_limit(self, limit=50) -> None:
         self.limit = str(limit)
@@ -26,34 +26,15 @@ class LastFM:
     def set_page(self, page=1) -> None:
         self.page = str(page)
 
-    def load_lovedtracks(self) -> dict:
+    def _download_url(self, url_to_download: str) -> dict:
         response = None
         parsed_response = None
-        request_url = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
-                          self.user + "&api_key=" + self.apikey + "&limit=" +
-                          self.limit + "&page=" + self.page + "&format=json")
 
         try:
-            response = urllib.request.urlopen(request_url)
+            response = urllib.request.urlopen(url_to_download)
             response_body = response.read()
             response_body = response_body.decode(encoding='utf-8')
             parsed_response = json.loads(response_body)
-
-            if parsed_response.get("error"):
-                error_code = parsed_response["error"]
-                error_message = parsed_response["message"]
-                raise Exception(error_message)
-            
-            else:
-                track_list = []
-                for track in parsed_response["lovedtracks"]["track"]:
-                    track_artist = track["artist"]["name"]
-                    track_name = track["name"]
-                    track_date = datetime.fromtimestamp(int(track["date"]["uts"])).strftime('%m/%d/%Y') 
-                    # track_list.append(f"'{track_name}' by '{track_artist}' on {track_date}")
-                    track_list.append(f"Artist: {track_artist}, Track: {track_name}, Loved on: {track_date}")
-
-                self.tracks = track_list
 
         except requests.exceptions.ConnectionError:
             raise Exception("Please check your internet connection")
@@ -75,10 +56,32 @@ class LastFM:
             raise Exception("Invalid data from remote API.")
         
         finally:
-            if response != None:
+            if not response is None:
                 response.close()
 
         return parsed_response
+
+    def load_data(self) -> None:
+        request_url = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
+                          self.user + "&api_key=" + self.apikey + "&limit=" +
+                          self.limit + "&page=" + self.page + "&format=json")
+
+        parsed_response = LastFM._download_url(request_url)
+
+        if parsed_response.get("error"):
+            error_code = parsed_response["error"]
+            error_message = parsed_response["message"]
+            raise Exception(error_message)
+    
+        else:
+            track_list = []
+            for track in parsed_response["lovedtracks"]["track"]:
+                track_artist = track["artist"]["name"]
+                track_name = track["name"]
+                track_date = datetime.fromtimestamp(int(track["date"]["uts"])).strftime('%m/%d/%Y') 
+                track_list.append(f"Artist: {track_artist}, Track: {track_name}, Loved on: {track_date}")
+
+            self.tracks = track_list
 
 
 # def main() -> None:

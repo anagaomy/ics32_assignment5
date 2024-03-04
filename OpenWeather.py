@@ -22,26 +22,14 @@ class OpenWeather:
     def set_apikey(self, apikey:str) -> None:
         self.apikey = apikey
 
-    def load_data(self) -> dict:
+    def _download_url(self, url_to_download: str) -> dict:
         response = None
         r_obj = None
-        request_url = str("http://api.openweathermap.org/data/2.5/weather?zip=" +
-                          self.zipcode + "," + self.ccode + "&appid=" + self.apikey)
 
         try:
-            response = urllib.request.urlopen(request_url)
+            response = urllib.request.urlopen(url_to_download)
             json_results = response.read()
             r_obj = json.loads(json_results)
-
-            self.temperature = r_obj["main"]["temp"]
-            self.high_temperature = r_obj["main"]["temp_max"]
-            self.low_temperature = r_obj["main"]["temp_min"]
-            self.longitude = r_obj["coord"]["lon"]
-            self.latitude = r_obj["coord"]["lat"]
-            self.description = r_obj["weather"][0]["description"]
-            self.humidity = r_obj["main"]["humidity"]
-            self.city = r_obj["name"]
-            self.sunset = datetime.datetime.fromtimestamp(r_obj["sys"]["sunset"]).strftime('%H:%M')   
 
         except requests.exceptions.ConnectionError:
             raise Exception("Please check your internet connection")
@@ -67,6 +55,22 @@ class OpenWeather:
                 response.close()
 
         return r_obj
+
+    def load_data(self) -> None:
+        url_to_download = str("http://api.openweathermap.org/data/2.5/weather?zip=" +
+                          self.zipcode + "," + self.ccode + "&appid=" + self.apikey)
+
+        r_obj = OpenWeather._download_url(url_to_download)
+
+        self.temperature = r_obj["main"]["temp"]
+        self.high_temperature = r_obj["main"]["temp_max"]
+        self.low_temperature = r_obj["main"]["temp_min"]
+        self.longitude = r_obj["coord"]["lon"]
+        self.latitude = r_obj["coord"]["lat"]
+        self.description = r_obj["weather"][0]["description"]
+        self.humidity = r_obj["main"]["humidity"]
+        self.city = r_obj["name"]
+        self.sunset = datetime.datetime.fromtimestamp(r_obj["sys"]["sunset"]).strftime('%H:%M')   
 
 
 # def main() -> None:

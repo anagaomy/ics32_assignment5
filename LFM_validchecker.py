@@ -6,13 +6,13 @@ username = "rj"
 apikey = "e05db7fa6efe7323ede21ee2e48c88f5"
 
 
-lastFM = LastFM(apikey)
-lastFM.set_user(username)
+lastFM = LastFM(username)
+lastFM.set_apikey(apikey)
 lastFM.set_limit()
 lastFM.set_page()
 
 
-dict = lastFM.load_lovedtracks()
+dict = lastFM.load_data()
 
 file_out = open('lastFM.json', "w")
 json.dump(dict, file_out, indent=4)
