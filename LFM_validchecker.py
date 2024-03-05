@@ -1,3 +1,9 @@
+# LFM_validchecker.py
+
+# Ana Gao
+# gaomy@uci.edu
+# 26384258
+
 from LastFM import LastFM
 import json
 

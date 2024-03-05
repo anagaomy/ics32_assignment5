@@ -1,3 +1,9 @@
+# ow_VALIDchecer.py
+
+# Ana Gao
+# gaomy@uci.edu
+# 26384258
+
 from OpenWeather import OpenWeather
 import json
 

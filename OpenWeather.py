@@ -15,7 +15,7 @@ import datetime
 
 class OpenWeather:
 
-    def __init__(self, zipcode, ccode) -> None:
+    def __init__(self, zipcode='92697', ccode='US') -> None:
         self.zipcode = zipcode
         self.ccode = ccode
 
@@ -49,9 +49,12 @@ class OpenWeather:
 
         except json.decoder.JSONDecodeError:
             raise Exception("Invalid data from remote API.")
+
+        except Exception as e:
+            print('Error:', e)
         
         finally:
-            if response != None:
+            if not response is None:
                 response.close()
 
         return r_obj

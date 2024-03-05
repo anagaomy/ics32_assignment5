@@ -15,27 +15,23 @@ import random
 
 class LastFM:
 
-    def __init__(self, user) -> None:
+    def __init__(self, user='rj', limit=50, page=1) -> None:
         self.user = user
+        self.limit = str(limit)
+        self.page = str(page)
 
     def set_apikey(self, apikey:str) -> None:
         self.apikey = str(apikey)
 
-    def set_limit(self, limit=50) -> None:
-        self.limit = str(limit)
-    
-    def set_page(self, page=1) -> None:
-        self.page = str(page)
-
     def _download_url(self, url_to_download: str) -> dict:
         response = None
-        parsed_response = None
+        r_obj = None
 
         try:
             response = urllib.request.urlopen(url_to_download)
             response_body = response.read()
             response_body = response_body.decode(encoding='utf-8')
-            parsed_response = json.loads(response_body)
+            r_obj = json.loads(response_body)
 
         except requests.exceptions.ConnectionError:
             raise Exception("Please check your internet connection")
@@ -55,23 +51,26 @@ class LastFM:
 
         except json.decoder.JSONDecodeError:
             raise Exception("Invalid data from remote API.")
+
+        except Exception as e:
+            print('Error:', e)
         
         finally:
             if not response is None:
                 response.close()
 
-        return parsed_response
+        return r_obj
 
     def load_data(self) -> None:
         url_to_download = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
                           self.user + "&api_key=" + self.apikey + "&limit=" +
                           self.limit + "&page=" + self.page + "&format=json")
 
-        parsed_response = LastFM._download_url(self, url_to_download)
+        r_obj = LastFM._download_url(self, url_to_download)
 
-        if parsed_response.get("error"):
-            error_code = parsed_response["error"]
-            error_message = parsed_response["message"]
+        if r_obj.get("error"):
+            error_code = r_obj["error"]
+            error_message = r_obj["message"]
             raise Exception(error_message)
     
         else:
@@ -79,7 +78,7 @@ class LastFM:
             date_list = []
             artist_list = []
             name_list = []
-            for track in parsed_response["lovedtracks"]["track"]:
+            for track in r_obj["lovedtracks"]["track"]:
                 track_artist = track["artist"]["name"]
                 track_name = track["name"]
                 track_date = datetime.fromtimestamp(int(track["date"]["uts"])).strftime('%m/%d/%Y')
@@ -105,16 +104,14 @@ class LastFM:
 
 
 # def main() -> None:
-    # zip = "92697"
-    # ccode = "US"
-    # apikey = "071481e600ad1194c116a0b9e95d56a8"
-    # url = f"http://api.openweathermap.org/data/2.5/weather?zip={zip},{ccode}&appid={apikey}"
+    # username = "rj"
+    # apikey = "e05db7fa6efe7323ede21ee2e48c88f5"
+    # url_to_download = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +
+                          #username + "&api_key=" + apikey + "&limit=" +
+                          #lastFM.limit + "&page=" + lastFM.page + "&format=json")
 
     # try:
-        # weather_obj = OpenWeather(zip, ccode)
-        # if weather_obj is not None:
-            # print(weather_obj['weather'][0]['description'])
-            # print(weather_obj)
+        # 
 
     # except Exception as e:
         # print("Error:", e)
