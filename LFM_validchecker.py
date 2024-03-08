@@ -14,8 +14,6 @@ apikey = "e05db7fa6efe7323ede21ee2e48c88f5"
 
 lastFM = LastFM(username)
 lastFM.set_apikey(apikey)
-lastFM.set_limit()
-lastFM.set_page()
 lastFM.load_data()
 
 url_to_download = str("http://ws.audioscrobbler.com/2.0/?method=user.getlovedtracks&user=" +

@@ -10,9 +10,8 @@ import json
 import urllib.request
 import urllib.error
 import requests.exceptions
-
-
 from abc import ABC, abstractmethod
+
 
 class WebAPI(ABC):
 
