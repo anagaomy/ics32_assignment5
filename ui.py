@@ -4,372 +4,385 @@
 # gaomy@uci.edu
 # 26384258
 
-import profile
-import a3 as run
+
+import a4 as cmd
 from pathlib import Path
-import pathlib
 from Profile import Profile as profile
-from Profile import Post as post
 from ds_client import send
 
 
-def input_error_check(data: str, journal):
-    if len(data.strip().split()) != 1:
-        print("Do NOT contain whitespace!")
-        Path(journal).unlink()
-        exit()
+# input/output messages
+INPUT_C = "Great! What is the name of the journal you would like to create? \n"
+INPUT_O = "Great! What is the name of the journal you would like to open? \n"
+INPUT_MAIN_MENU = (" PO  - Publish online \n"
+                   " C   - Create a new file \n"
+                   " O   - Open an existing file \n"
+                   " R   - Read file \n"
+                   " D   - Delete file \n"
+                   " Q   - Quit \n")
+INPUT_COMMAND_MENU = " E - Edit file \n P - Print data in file \n Q - Quit \n"
+COMMAND_E = (" -svr [SERVER IP ADDRESS] \n"
+             " -usr [USERNAME] \n"
+             " -pwd [PASSWORD] \n"
+             " -bio [BIO] \n"
+             " -addpost [NEW POST] \n"
+             " -delpost [ID] \n"
+             " -publish \n")
+COMMAND_P = (" -usr \n"
+             " -pwd \n"
+             " -bio \n"
+             " -posts \n"
+             " -post [ID]"
+             " \n -all \n"
+             " -publish \n")
+MSG_C_SUCCESS = "\nNew journal successfully created! \n"
+MSG_O_SUCCESS = "Journal is loading successfully! \n"
+USRNAME_INPUT = "Enter your username (please do NOT contain whitespace): \n"
+PWD_INPUT = "Enter your password (please do Not contain whitespace): \n"
+SVR_UPD = "Great! What is the server IP address? \n"
+USRNAME_UPD = "Great! What is the username that you want to update? \n"
+PSW_UPD = "Great! What is the password that you want to update? \n"
+BIO_UPDATE = "Great! What is the bio that you want to update? \n"
+POST_UPD = "Great! What post do you want to add? \n"
+POST_ID_UPD = "Great! Which post do you want to delete? \n"
 
 
-def user_bio_error_check(data: str, journal):
-    if len(data) == 0:
-        print("Error! Invalid bio!")
-        Path(journal).unlink()
-        exit()
-    else:
-        if data.isspace():
-            print("Error! Invalid bio!")
-            Path(journal).unlink()
-            exit()
+def profile_loading(journal: str):
+    PROFILE = profile()
+    PROFILE.load_profile(str(journal))
+
+    print(f"Username: {PROFILE.username}")
+    print(f"Password: {PROFILE.password}")
+    print(f"Bio: {PROFILE.bio}")
 
 
-def user_post_error_check(data: str):
-    if len(data) == 0:
-        print("Error! Invalid post!")
-        exit()
-    else:
-        if data.isspace():
-            print("Error! Invalid post!")
-            exit()
+def data_collection(journal: str):
+    username = input(USRNAME_INPUT)
+    cmd.input_error_check(username, journal)
+
+    password = input(PWD_INPUT)
+    cmd.input_error_check(password, journal)
+
+    bio = input("Enter your bio: \n")
+    cmd.user_bio_error_check(bio, journal)
+
+    PROFILE = profile(username=username, password=password)
+    PROFILE.bio = bio
+    PROFILE.save_profile(str(journal))
+    print("User info successfully saved in the Profile!")
 
 
-def list_contents(directory):
-    myPath = Path(directory)
-    paths = myPath.iterdir()
-    pathsList = []
-    for currentPath in sorted(paths, key=lambda p: (p.is_dir(), p.name)):
-        pathsList.append(currentPath)
-    return pathsList
+def UI_new_commands(journal):
+    print("What would you like to do next?")
+    command = input(INPUT_COMMAND_MENU)
+    if len(command) == 0:
+        print("ERROR")
+        UI_new_commands(journal)
+    if command == 'E':
+        print("Great! Which option do you want to choose? \n")
+        option = input(COMMAND_E)
+        option = option.strip().split()
 
+        if len(option) > 1:
+            try:
+                cmd.command_E(journal, option)
+            except Exception:
+                print("ERROR")
 
-def list_recursively(directory):
-    myPath = Path(directory)
-    paths = myPath.iterdir()
-    pathsList = []
-    for currentPath in sorted(paths, key=lambda p: (p.is_dir(), p.name)):
-        if currentPath.is_file():
-            pathsList.append(currentPath)
-        elif currentPath.is_dir():
-            pathsList.append(currentPath)
-            for path in list_recursively(currentPath):
-                pathsList.append(path)
-    return pathsList
-
-
-def list_file(directory):
-    myPath = Path(directory)
-    paths = myPath.iterdir()
-    pathsList = []
-    for currentPath in sorted(paths, key=lambda p: (p.is_dir(), p.name)):
-        if currentPath.is_file():
-            pathsList.append(currentPath)
-    return pathsList
-
-
-def command_len2(directory):
-    for path in list_contents(directory):
-        print(path)
-
-
-def command_len3(command, directory):
-    option = command[2]
-    if option == '-r':
-        for path in list_recursively(directory):
-            print(path)
-    elif option == '-f':
-        for path in list_file(directory):
-            print(path)
-    else:
-        print("Error! Invalid command!")
-
-
-def list_matching_name(command, directory):
-    name = command[3:]
-    name = ' '.join(name)
-    for currentPath in list_contents(directory):
-        if currentPath == Path(directory)/name:
-            if Path(currentPath).is_file():
-                print(currentPath)
-
-
-def list_extension(command, directory):
-    extension = command[-1]
-    for path in list_contents(directory):
-        if pathlib.Path(path).suffix == ('.' + extension):
-            print(path)
-        else:
-            return False
-
-
-def recursion_options(command, directory):
-    myPath = Path(directory)
-    paths = myPath.iterdir()
-
-    if command[3] == '-f':
-        for path in sorted(paths, key=lambda p: (p.is_dir(), p.name)):
-            if path.is_file():
-                print(path)
-            elif path.is_dir():
-                for i in list_file(path):
-                    print(i)
-
-    elif command[3] == '-s':
-        name = command[4:]
-        name = ' '.join(name)
-        for currentPath in list_recursively(directory):
-            if name in str(currentPath):
-                if Path(currentPath).is_file():
-                    print(currentPath)
-                else:
-                    return False
-
-    elif command[3] == '-e':
-        extension = command[-1]
-        for path in list_recursively(directory):
-            if pathlib.Path(path).suffix == ('.' + extension):
-                print(path)
-
-
-def command_E(journal, command: list):
-    if len(command) > 1:
-        for i in command:
-            index = command.index(i) + 1
-            PROFILE = profile()
-            PROFILE.load_profile(str(journal))
-            if i == '-svr':
-                server = str(command[index]).replace("'", "")
-                server = server.replace('"', '')
-                input_error_check(server, journal)
-
-                PROFILE.dsuserver = server
-                PROFILE.save_profile(str(journal))
-                print("DSUserver successfully updated!")
-
-            elif i == '-usr':
-                username = str(command[index]).replace("'", "")
-                username = username.replace('"', '')
-                input_error_check(username, journal)
-
-                PROFILE.username = username
-                PROFILE.save_profile(str(journal))
+        elif len(option) == 1:
+            list = []
+            option = ''.join(option)
+            if option == '-usr':
+                list.append(option)
+                username = input(USRNAME_UPD)
+                list.append(username)
+                cmd.command_E(journal, list)
                 print("Username succeffully updated!")
 
-            elif i == '-pwd':
-                password = str(command[index]).replace("'", "")
-                password = password.replace('"', '')
-                input_error_check(password, journal)
-
-                PROFILE.password = password
-                PROFILE.save_profile(str(journal))
+            elif option == '-pwd':
+                list.append(option)
+                password = input(PSW_UPD)
+                list.append(password)
+                cmd.command_E(journal, list)
                 print("User password succeffully updated!")
 
-            elif i == '-bio':
-                bio = command[index:]
-                bio = ' '.join(bio)
-                bio = bio.replace("'", "")
-                bio = bio.replace('"', '')
-                user_bio_error_check(bio, journal)
+            elif option == '-bio':
+                list.append(option)
+                bio = input(BIO_UPDATE)
+                list.append(bio)
+                cmd.command_E(journal, list)
+                print("Profile bio succeffully updated!")
 
-                PROFILE.bio = bio
-                PROFILE.save_profile(str(journal))
-                print("Profile bio successfully updated!")
-
-            elif i == '-addpost':
-                entry = command[index:]
-                entry = ' '.join(entry)
-                entry = entry.replace("'", "")
-                entry = entry.replace('"', '')
-                user_post_error_check(entry)
-
-                POST = post(entry=entry)
-                POST.set_entry
-                POST.get_entry
-                POST.set_time
-                POST.get_time
-                POST.entry
-                POST.timestamp
-
-                PROFILE.add_post(POST)
-                PROFILE.save_profile(str(journal))
+            elif option == '-addpost':
+                list.append(option)
+                post = input(POST_UPD)
+                list.append(post)
+                cmd.command_E(journal, list)
                 print("New post successfully added to profile!")
 
-            elif i == '-delpost':
-                ID = int(command[index]) - 1
-                PROFILE.get_posts
-                PROFILE.del_post(ID)
-                PROFILE.save_profile(str(journal))
+            elif option == '-delpost':
+                list.append(option)
+                post_ID = input(POST_ID_UPD)
+                list.append(post_ID)
+                cmd.command_E(journal, list)
                 print("Selected post successfully deleted from profile!")
 
-            elif i == '-publish':
+            elif option == '-publish':
                 ID = -1
-                publish_from_file(journal, ID)
-
-            elif i == 'Q':
-                exit()
+                cmd.publish_from_file(journal, ID)
+                print("User Profile successful published to the server!")
 
             else:
-                continue
-    else:
-        print("ERROR")
-        exit()
+                print("ERROR")
 
-
-def command_P(journal, command: list):
-    if len(command) >= 1:
-        for j in command:
-            PROFILE = profile()
-            PROFILE.load_profile(str(journal))
-            if j == '-usr':
-                print(f"Username: {PROFILE.username}")
-
-            elif j == '-pwd':
-                print(f"Password: {PROFILE.password}")
-
-            elif j == '-bio':
-                print(f"Bio: {PROFILE.bio}")
-
-            elif j == '-posts':
-                count = len(PROFILE._posts)
-                print("\nPosts:")
-                for post in range(count):
-                    print(f"Post {post+1}: {PROFILE._posts[post]["entry"]}")
-
-            elif j == '-post':
-                index = command.index(j) + 1
-                ID = int(command[index]) - 1
-                post = PROFILE._posts[ID]
-                print(f"Post{ID + 1}: {post["entry"]}")
-
-            elif j == '-all':
-                print("\nHere is all the contents in the profile: \n")
-                print(f"DSU Server: {PROFILE.dsuserver}")
-                print(f"Username: {PROFILE.username}")
-                print(f"Password: {PROFILE.password}")
-                print(f"Bio: {PROFILE.bio}")
-                print("Posts: ")
-                count = len(PROFILE._posts)
-                for post in range(count):
-                    print(f"Post {post+1}: {PROFILE._posts[post]["entry"]}")
-
-            elif j == '-publish':
-                index = command.index(j) + 1
-                ID = int(command[index]) - 1
-                publish_from_file(journal, ID)
-
-            elif j == 'Q':
-                exit()
-
-            else:
-                continue
-    else:
-        print("ERROR")
-        exit()
-
-
-def command_O(journal: str):
-    try:
-        if str(journal).endswith('.dsu'):
-            if Path(journal).exists():
-                run.profile_loading(str(journal))
-            else:
-                raise profile.DsuFileError(Exception)
         else:
-            if Path(journal).suffix == '':
-                journal = str(journal) + '.dsu'
-                if Path(journal).exists():
-                    run.profile_loading(str(journal))
+            print("ERROR")
+
+    elif command == 'P':
+        print("Great! Which option do you want to choose? \n")
+        option = input(COMMAND_P)
+        option = option.strip().split(" ")
+
+        if len(option) > 1:
+            if cmd.command_P(journal, list) is False:
+                print("ERROR")
+
+        elif len(option) == 1:
+            list = []
+            option = ''.join(option)
+
+            if option == '-post':
+                list.append(option)
+                post = input("Great! Which post do you want to print? \n")
+                list.append(post)
+
+            elif option == '-publish':
+                list.append(option)
+                post = input("Great! Which post do you want to publish? \n")
+                list.append(post)
+
             else:
-                raise profile.DsuFileError(Exception)
-    except Exception:
-        print("Error! DSU could not be found!")
+                list.append(option)
+
+            if cmd.command_P(journal, list) is False:
+                print("ERROR")
+
+        else:
+            print("ERROR")
+            # quit()
+
+    elif command == 'Q':
+        quit()
+
     else:
-        return journal
+        user_interface(command)
+    UI_new_commands(journal)
 
 
-def new_file(command, directory):
-    name = command[3:]
-    name = " ".join(name)
-    if command[2] == '-n':
-        filePath = Path(directory)/name
+def user_interface(command: str):
+    list = command.split()
+    command = list[0]
+    if command == "C":
+        journal = input(INPUT_C)
+        if len(journal.strip().split()) != 1:
+            print("Error! Do NOT contain whitespace!")
+            user_interface(command)
+            # quit()
         try:
-            if str(filePath).endswith('.dsu'):
-                if filePath in list_contents(directory):
-                    run.profile_loading(str(filePath))
+            if str(journal).endswith('.dsu'):
+                if Path(journal).exists():
+                    print(MSG_O_SUCCESS)
+                    print("Here is your current profile info: \n")
+                    profile_loading(str(journal))
                 else:
-                    Path(filePath).touch()
-                    print("New journal successfully created!")
-                    run.data_collection(str(filePath))
+                    journal = Path(journal)
+                    journal.touch()
+                    print(MSG_C_SUCCESS)
+                    data_collection(str(journal))
             else:
-                if Path(filePath).suffix != '':
-                    Path(filePath).touch()
+                if Path(journal).suffix != '':
+                    Path(journal).touch()
                 else:
-                    filePath = str(filePath) + '.dsu'
-                    if Path(filePath).exists():
-                        run.profile_loading(str(filePath))
+                    journal = Path(str(journal) + '.dsu')
+                    if Path(journal).exists():
+                        print(MSG_O_SUCCESS)
+                        print("Here is your current profile info: \n")
+                        profile_loading(str(journal))
                     else:
-                        Path(filePath).touch()
-                        print("New journal successfully created!")
-                        run.data_collection(str(filePath))
+                        journal.touch()
+                        print(MSG_C_SUCCESS)
+                        data_collection(str(journal))
         except Exception:
             print("Error occured when saving user data!")
         else:
-            return filePath
+            UI_new_commands(journal)
+
+    elif command == "O":
+        try:
+            journal = input(INPUT_O)
+            if len(journal.strip().split()) != 1:
+                print("ERROR")
+                user_interface(command)
+            journal = cmd.command_O(journal)
+        except FileNotFoundError:
+            print("Error! No such directory/file found!")
+        except NotADirectoryError:
+            print("Error! Not a directory!")
+        else:
+            UI_new_commands(journal)
+
+    elif command == "PO":
+        publish_online()
+
+    elif command == "L":
+        _admin_(list)
+
+    elif command == "D":
+        _admin_(list)
+
+    elif command == "R":
+        _admin_(list)
+
+    elif command == "Q":
+        quit()
+
     else:
         print("ERROR")
+        ui_main()
 
 
-def delete_file(command):
-    filePath = command[-1]
-    if Path(filePath).suffix != ('.dsu'):
+def new_commands(journal: str, command):
+    command = input("What would you like to do next? \n").split()
+    if len(command) == 0:
         print("ERROR")
+        new_commands(journal, command)
+    if command[0] == "E":
+        if cmd.command_E(journal, command[1:]) is False:
+            new_commands(journal, command[1:])
+    elif command[0] == "P":
+        if cmd.command_P(journal, command[1:]) is False:
+            new_commands(journal, command[1:])
+    elif command[0] == "Q":
+        quit()
     else:
-        if Path(filePath).exists():
-            Path(filePath).unlink()
-            print(str(filePath) + " DELETED")
+        _admin_(command)
+    new_commands(journal, command)
+
+
+def _admin_(command):
+    try:
+        if len(command) == 0:
+            print("ERROR")
+            command = input("What would you like to do next? \n").strip().split()
+            _admin_(command)
+
+        if command[0] == 'Q':
+            quit()
+
+        elif command[0] == 'L':
+            directory = command[1]
+            if len(command) == 2:
+                cmd.command_len2(directory)
+            elif len(command) == 3:
+                cmd.command_len3(command, directory)
+            elif len(command) >= 4:
+                if command[2] == '-r':
+                    cmd.recursion_options(command, directory)
+                elif command[2] == '-s':
+                    cmd.list_matching_name(command, directory)
+                elif command[2] == '-e':
+                    cmd.list_extension(command, directory)
+            else:
+                print("ERROR")
+
+        elif command[0] == 'C':
+            if len(command) > 1:
+                directory = command[1]
+                journal = cmd.admin_new_file(command, directory)
+                new_commands(journal, command)
+            else:
+                print("ERROR")
+
+        elif command[0] == 'O':
+            if len(command) > 1:
+                directory = command[1]
+                journal = cmd.command_O(directory)
+                new_commands(journal, command)
+            else:
+                print("ERROR")
+
+        elif command[0] == 'D':
+            if len(command) > 1:
+                directory = command[1]
+                cmd.delete_file(command)
+            else:
+                print("ERROR")
+
+        elif command[0] == 'R':
+            if len(command) > 1:
+                directory = command[1]
+                cmd.read_file(command)
+            else:
+                print("ERROR")
+
+        elif command[0] == 'PO':
+            pass
+
         else:
             print("ERROR")
+            command = input("What would you like to do next? \n").strip().split()
+            _admin_(command)
 
+        command = input("What would you like to do next? \n").strip().split()
+        _admin_(command)
 
-def read_file(command):
-    filePath = Path(command[-1])
-    if filePath.suffix != ('.dsu'):
+    except Exception:
         print("ERROR")
+
     else:
-        try:
-            with open(filePath, 'r') as file:
-                lines = file.readlines()
-                if len(lines) == 0:
-                    print("EMPTY")
-                else:
-                    for line in lines:
-                        line = line.strip()
-                        print(line)
-        except FileNotFoundError:
-            print("ERROR")
+        command = input("What would you like to do next? \n").strip().split()
+        _admin_(command)
 
 
-def publish_from_file(journal, post_ID):
-    PROFILE = profile()
-    PROFILE.load_profile(str(journal))
+def publish_online():
     port = 3021
-    server = str(PROFILE.dsuserver)
-    username = str(PROFILE.username)
-    password = str(PROFILE.password)
-    bio = str(PROFILE.bio)
-    message = str(PROFILE._posts[post_ID]['entry'])
+    server = str(input("Enter a server IP address: "))  # 168.235.86.101
+    username = str(input("Enter your username: "))
+    password = str(input("Enter your password: "))
+    bio_option = str(input("Would you like to add a bio? (y/n) "))
+    if bio_option == 'y':
+        bio = str(input("Enter your bio: "))
+    elif bio_option == 'n':
+        bio = None
+    else:
+        print("NO BIO")
+        bio = None
+    message = str(input("Enter a post message: "))
 
     if send(server, port, username, password, message, bio):
         print("Operation completed successfully!")
-        exit()
+        ####exit()
     else:
         print("Oops! Operation failed!")
-        exit()
+        ###exit()
+
+
+def ui_main():
+    try:
+        user_input = input(f"Welcome! What would you like to do? \n{INPUT_MAIN_MENU}")
+        if len(user_input) == 0:
+            print("ERROR")
+            ui_main()
+        if user_input == "admin":
+            command = input("What would you like to do? \n").strip().split()
+            _admin_(command)
+        else:
+            user_interface(user_input)
+
+    except FileNotFoundError:
+        print("Error! No such directory/file found!")
+        ui_main()
+
+    except NotADirectoryError:
+        print("Error! Not a directory!")
+        ui_main()
