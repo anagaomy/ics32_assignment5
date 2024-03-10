@@ -18,7 +18,6 @@ def input_error_check(data: str, journal):
         print("Do NOT contain whitespace!")
         Path(journal).unlink()
         return False
-        # exit()
 
 
 def user_bio_error_check(data: str, journal):
@@ -26,13 +25,11 @@ def user_bio_error_check(data: str, journal):
         print("Error! Invalid bio!")
         Path(journal).unlink()
         return False
-        # exit()
     else:
         if data.isspace():
             print("Error! Invalid bio!")
             Path(journal).unlink()
             return False
-            # exit()
 
 
 def list_contents(directory):
@@ -294,7 +291,6 @@ def command_P(journal: str, command: list):
     else:
         print("ERROR")
         return False
-        # exit()
 
 
 def command_O(journal: str):
@@ -425,10 +421,8 @@ def publish_from_file(journal, post_ID):
 
     if send(server, port, username, password, message, bio):
         print("Operation completed successfully!")
-        ## exit()
     else:
         print("Oops! Operation failed!")
-        ## exit()
 
 
 def main():

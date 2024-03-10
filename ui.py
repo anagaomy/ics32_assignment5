@@ -9,6 +9,9 @@ import a4 as cmd
 from pathlib import Path
 from Profile import Profile as profile
 from ds_client import send
+from WebAPI import WebAPI
+from LastFM import  LastFM
+from OpenWeather import OpenWeather
 
 
 # input/output messages
@@ -326,7 +329,7 @@ def _admin_(command):
                 print("ERROR")
 
         elif command[0] == 'PO':
-            pass
+            publish_online()
 
         else:
             print("ERROR")
@@ -359,12 +362,29 @@ def publish_online():
         bio = None
     message = str(input("Enter a post message: "))
 
+    if '@weather' in message:
+        open_weather = OpenWeather()
+        apikey_ow = str(input("Enter your API key for OpenWeather: "))
+        message = api_translude(message, apikey_ow, open_weather)
+    
+    if '@lastfm' in message:
+        lastfm = LastFM()
+        apikey_lfm = str(input("Enter your API key for LastFM: "))
+        message = api_translude(message, apikey_lfm, lastfm)
+
     if send(server, port, username, password, message, bio):
         print("Operation completed successfully!")
-        ####exit()
     else:
         print("Oops! Operation failed!")
-        ###exit()
+
+    ui_main()
+
+
+def api_translude(message: str, apikey: str, webapi: WebAPI) -> str:
+    webapi.set_apikey(apikey)
+    webapi.load_data()
+    result = webapi.transclude(message)
+    return result
 
 
 def ui_main():
