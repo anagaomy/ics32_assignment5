@@ -9,8 +9,7 @@ import a4 as cmd
 from pathlib import Path
 from Profile import Profile as profile
 from ds_client import send
-from WebAPI import WebAPI
-from LastFM import  LastFM
+from LastFM import LastFM
 from OpenWeather import OpenWeather
 
 
@@ -286,7 +285,7 @@ def _admin_(command):
     try:
         if len(command) == 0:
             print("ERROR")
-            command = input("What would you like to do next? \n").strip().split()
+            command = input("What would you like to do next? \n").split()
             _admin_(command)
 
         if command[0] == 'Q':
@@ -343,17 +342,17 @@ def _admin_(command):
 
         else:
             print("ERROR")
-            command = input("What would you like to do next? \n").strip().split()
+            command = input("What would you like to do next? \n").split()
             _admin_(command)
 
-        command = input("What would you like to do next? \n").strip().split()
+        command = input("What would you like to do next? \n").split()
         _admin_(command)
 
     except Exception:
         print("ERROR")
 
     else:
-        command = input("What would you like to do next? \n").strip().split()
+        command = input("What would you like to do next? \n").split()
         _admin_(command)
 
 
@@ -395,13 +394,14 @@ def api_translude(message) -> str:
         lastfm.set_apikey(apikey_lfm)
         lastfm.load_data()
         message = lastfm.transclude(message)
-    
+
     return message
 
 
 def ui_main():
     try:
-        user_input = input(f"Welcome! What would you like to do? \n{INPUT_MAIN_MENU}")
+        user_input = input(f"Welcome! What would you like to do? \
+                           \n{INPUT_MAIN_MENU}")
         if len(user_input) == 0:
             print("ERROR")
             ui_main()

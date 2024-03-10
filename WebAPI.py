@@ -35,34 +35,38 @@ class WebAPI(ABC):
             status_code = e.code
 
             if status_code == 404:
-                raise Exception("The specified URL is not valid. Please check your zipcode and country code.")
+                raise Exception("The specified URL is not valid. \
+                                Please check your zipcode and country code.")
             elif status_code == 503:
-                raise Exception("The remote API is unavailable. Please try again later.")
+                raise Exception("The remote API is unavailable. \
+                                Please try again later.")
             else:
-                raise Exception("An unknown error has occurred. Please try again later.")
+                raise Exception("An unknown error has occurred. \
+                                Please try again later.")
 
         except urllib.error.URLError:
-            raise Exception("Cannot connect to the internet. Please check your connection and try again.")
+            raise Exception("Cannot connect to the internet. \
+                            Please check your connection and try again.")
 
         except json.decoder.JSONDecodeError:
             raise Exception("Invalid data from remote API.")
-        
+
         except Exception as e:
             print('Error:', e)
-        
+
         finally:
-            if not response is None:
+            if response is not None:
                 response.close()
 
         return r_obj
 
-    def set_apikey(self, apikey:str) -> None:
+    def set_apikey(self, apikey: str) -> None:
         self.apikey = apikey
 
     @abstractmethod
     def load_data(self):
-      pass
+        pass
 
     @abstractmethod
-    def transclude(self, message:str) -> str:
+    def transclude(self, message: str) -> str:
         pass
