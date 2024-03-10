@@ -110,7 +110,7 @@ select one of the user's favorite songs to be included in the message.
 
 Class Last.fm (user.getLovedTracks) Parameters:
 
-    user (Required) : The user name to fetch the loved tracks for.
+    user (Optional) : The user name to fetch the loved tracks for. Defaults to 'rj'
     limit (Optional) : The number of results to fetch per page. Defaults to 50.
     page (Optional) : The page number to fetch. Defaults to first page.
     apikey (Required) : A LastFM API key.
