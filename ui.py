@@ -361,18 +361,9 @@ def publish_online():
         print("NO BIO")
         bio = None
     message = str(input("Enter a post message: "))
+    result = api_translude(message)
 
-    if '@weather' in message:
-        open_weather = OpenWeather()
-        apikey_ow = str(input("Enter your API key for OpenWeather: "))
-        message = api_translude(message, apikey_ow, open_weather)
-    
-    if '@lastfm' in message:
-        lastfm = LastFM()
-        apikey_lfm = str(input("Enter your API key for LastFM: "))
-        message = api_translude(message, apikey_lfm, lastfm)
-
-    if send(server, port, username, password, message, bio):
+    if send(server, port, username, password, result, bio):
         print("Operation completed successfully!")
     else:
         print("Oops! Operation failed!")
@@ -380,11 +371,22 @@ def publish_online():
     ui_main()
 
 
-def api_translude(message: str, apikey: str, webapi: WebAPI) -> str:
-    webapi.set_apikey(apikey)
-    webapi.load_data()
-    result = webapi.transclude(message)
-    return result
+def api_translude(message) -> str:
+    if '@weather' in message:
+        apikey_ow = str(input("Enter your API key for OpenWeather: "))
+        open_weather = OpenWeather()
+        open_weather.set_apikey(apikey_ow)
+        open_weather.load_data()
+        message = open_weather.transclude(message)
+
+    if '@lastfm' in message:
+        apikey_lfm = str(input("Enter your API key for LastFM: "))
+        lastfm = LastFM()
+        lastfm.set_apikey(apikey_lfm)
+        lastfm.load_data()
+        message = open_weather.transclude(message)
+    
+    return message
 
 
 def ui_main():

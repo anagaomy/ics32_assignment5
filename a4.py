@@ -178,6 +178,7 @@ def command_E(journal: str, command: list):
                 entry = ' '.join(entry)
                 entry = entry.replace("'", "")
                 entry = entry.replace('"', '')
+                entry = run.api_translude(entry)
 
                 POST = post(entry=entry)
                 POST.set_entry
