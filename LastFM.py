@@ -110,12 +110,5 @@ class LastFM:
                           #username + "&api_key=" + apikey + "&limit=" +
                           #lastFM.limit + "&page=" + lastFM.page + "&format=json")
 
-    # try:
-        # 
-
-    # except Exception as e:
-        # print("Error:", e)
-
-
 # if __name__ == '__main__':
     # main()

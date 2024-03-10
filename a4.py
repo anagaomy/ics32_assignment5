@@ -32,6 +32,16 @@ def user_bio_error_check(data: str, journal):
             return False
 
 
+def user_post_error_check(data: str):
+    if len(data) == 0:
+        print("Error! Invalid post!")
+        return False
+    else:
+        if data.isspace():
+            print("Error! Invalid post!")
+            return False
+
+
 def list_contents(directory):
     myPath = Path(directory)
     paths = myPath.iterdir()
@@ -132,52 +142,55 @@ def recursion_options(command, directory):
 def command_E(journal: str, command: list):
     if len(command) > 1:
         for i in command:
-            if i == '-usr':
-                index = command.index(i) + 1
+            index = command.index(i) + 1
+            PROFILE = profile()
+            PROFILE.load_profile(str(journal))
+            if i == '-svr':
+                server = str(command[index]).replace("'", "")
+                server = server.replace('"', '')
+                input_error_check(server, journal)
+
+                PROFILE.dsuserver = server
+                PROFILE.save_profile(str(journal))
+
+            elif i == '-usr':
                 username = str(command[index]).replace("'", "")
                 username = username.replace('"', '')
-                if input_error_check(username, journal) is False:
+                if not input_error_check(username, journal):
                     print("ERROR")
                     return False
 
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 PROFILE.username = username
                 PROFILE.save_profile(str(journal))
 
             elif i == '-pwd':
-                index = command.index(i) + 1
                 password = str(command[index]).replace("'", "")
                 password = password.replace('"', '')
-                if input_error_check(password, journal) is False:
+                if not input_error_check(password, journal):
                     print("ERROR")
                     return False
 
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 PROFILE.password = password
                 PROFILE.save_profile(str(journal))
 
             elif i == '-bio':
-                index = command.index(i) + 1
                 bio = command[index:]
                 bio = ' '.join(bio)
                 bio = bio.replace("'", "")
                 bio = bio.replace('"', '')
-                if user_bio_error_check(bio, journal) is False:
+                if not user_bio_error_check(bio, journal):
                     print("ERROR")
 
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 PROFILE.bio = bio
                 PROFILE.save_profile(str(journal))
 
             elif i == '-addpost':
-                index = command.index(i) + 1
                 entry = command[index:]
                 entry = ' '.join(entry)
                 entry = entry.replace("'", "")
                 entry = entry.replace('"', '')
+                if not user_post_error_check(entry):
+                    print("ERROR")
                 entry = run.api_translude(entry)
 
                 POST = post(entry=entry)
@@ -188,16 +201,11 @@ def command_E(journal: str, command: list):
                 POST.entry
                 POST.timestamp
 
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 PROFILE.add_post(POST)
                 PROFILE.save_profile(str(journal))
 
             elif i == '-delpost':
-                index = command.index(i) + 1
                 ID = int(command[index]) - 1
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 PROFILE.get_posts
                 PROFILE.del_post(ID)
                 PROFILE.save_profile(str(journal))
@@ -226,24 +234,21 @@ def command_E(journal: str, command: list):
 def command_P(journal: str, command: list):
     if len(command) >= 1:
         for j in command:
-            if j == '-usr':
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
+            PROFILE = profile()
+            PROFILE.load_profile(str(journal))
+            if j == '-svr':
+                print(f"DSUserver: {PROFILE.dsuserver}")
+
+            elif j == '-usr':
                 print(f"Username: {PROFILE.username}")
 
             elif j == '-pwd':
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 print(f"Password: {PROFILE.password}")
 
             elif j == '-bio':
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 print(f"Bio: {PROFILE.bio}")
 
             elif j == '-posts':
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 count = len(PROFILE._posts)
                 print("Posts:")
                 for post in range(count):
@@ -256,14 +261,10 @@ def command_P(journal: str, command: list):
 
                 index = command.index(j) + 1
                 ID = int(command[index]) - 1
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 post = PROFILE._posts[ID]
                 print(f"Post{ID + 1}: {post["entry"]}")
 
             elif j == '-all':
-                PROFILE = profile()
-                PROFILE.load_profile(str(journal))
                 # print("Here is all the contents in the profile: ")
                 print(f"DSU Server: {PROFILE.dsuserver}")
                 print(f"Username: {PROFILE.username}")

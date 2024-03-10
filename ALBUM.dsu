@@ -1,0 +1,16 @@
+{
+    "dsuserver": "168.235.86.101",
+    "username": "BLACKPINK",
+    "password": "2016",
+    "bio": "BLACKPINK in your area!",
+    "_posts": [
+        {
+            "entry": "Hi it is clear sky today and I am listening to Doctor Doctor",
+            "timestamp": 1710033577.544054
+        },
+        {
+            "entry": "Kill This Love",
+            "timestamp": 1710033676.3282182
+        }
+    ]
+}

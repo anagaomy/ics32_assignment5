@@ -31,14 +31,15 @@ COMMAND_E = (" -svr [SERVER IP ADDRESS] \n"
              " -addpost [NEW POST] \n"
              " -delpost [ID] \n"
              " -publish \n")
-COMMAND_P = (" -usr \n"
+COMMAND_P = (" -svr \n"
+             " -usr \n"
              " -pwd \n"
              " -bio \n"
              " -posts \n"
              " -post [ID]"
              " \n -all \n"
              " -publish \n")
-MSG_C_SUCCESS = "\nNew journal successfully created! \n"
+MSG_C_SUCCESS = "New journal successfully created! \n"
 MSG_O_SUCCESS = "Journal is loading successfully! \n"
 USRNAME_INPUT = "Enter your username (please do NOT contain whitespace): \n"
 PWD_INPUT = "Enter your password (please do Not contain whitespace): \n"
@@ -78,9 +79,11 @@ def data_collection(journal: str):
 def UI_new_commands(journal):
     print("What would you like to do next?")
     command = input(INPUT_COMMAND_MENU)
+
     if len(command) == 0:
         print("ERROR")
         UI_new_commands(journal)
+
     if command == 'E':
         print("Great! Which option do you want to choose? \n")
         option = input(COMMAND_E)
@@ -95,7 +98,14 @@ def UI_new_commands(journal):
         elif len(option) == 1:
             list = []
             option = ''.join(option)
-            if option == '-usr':
+            if option == '-svr':
+                list.append(option)
+                server = str(input(SVR_UPD))
+                list.append(server)
+                cmd.command_E(journal, list)
+                print("Server IP address successfully updated!")
+
+            elif option == '-usr':
                 list.append(option)
                 username = input(USRNAME_UPD)
                 list.append(username)
@@ -132,8 +142,8 @@ def UI_new_commands(journal):
 
             elif option == '-publish':
                 ID = -1
-                cmd.publish_from_file(journal, ID)
-                print("User Profile successful published to the server!")
+                if cmd.publish_from_file(journal, ID):
+                    print("User Profile successful published to the server!")
 
             else:
                 print("ERROR")
@@ -147,7 +157,7 @@ def UI_new_commands(journal):
         option = option.strip().split(" ")
 
         if len(option) > 1:
-            if cmd.command_P(journal, list) is False:
+            if not cmd.command_P(journal, list):
                 print("ERROR")
 
         elif len(option) == 1:
@@ -167,7 +177,7 @@ def UI_new_commands(journal):
             else:
                 list.append(option)
 
-            if cmd.command_P(journal, list) is False:
+            if not cmd.command_P(journal, list):
                 print("ERROR")
 
         else:
@@ -260,10 +270,10 @@ def new_commands(journal: str, command):
         print("ERROR")
         new_commands(journal, command)
     if command[0] == "E":
-        if cmd.command_E(journal, command[1:]) is False:
+        if not cmd.command_E(journal, command[1:]):
             new_commands(journal, command[1:])
     elif command[0] == "P":
-        if cmd.command_P(journal, command[1:]) is False:
+        if not cmd.command_P(journal, command[1:]):
             new_commands(journal, command[1:])
     elif command[0] == "Q":
         quit()
@@ -352,7 +362,7 @@ def publish_online():
     server = str(input("Enter a server IP address: "))  # 168.235.86.101
     username = str(input("Enter your username: "))
     password = str(input("Enter your password: "))
-    bio_option = str(input("Would you like to add a bio? (y/n) "))
+    bio_option = str(input("Would you like to add a bio? (y/n): "))
     if bio_option == 'y':
         bio = str(input("Enter your bio: "))
     elif bio_option == 'n':
@@ -384,7 +394,7 @@ def api_translude(message) -> str:
         lastfm = LastFM()
         lastfm.set_apikey(apikey_lfm)
         lastfm.load_data()
-        message = open_weather.transclude(message)
+        message = lastfm.transclude(message)
     
     return message
 
