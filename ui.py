@@ -121,6 +121,7 @@ def UI_new_commands(journal):
             elif option == '-bio':
                 list.append(option)
                 bio = input(BIO_UPDATE)
+                bio = api_translude(bio)
                 list.append(bio)
                 cmd.command_E(journal, list)
                 print("Profile bio succeffully updated!")
@@ -128,6 +129,7 @@ def UI_new_commands(journal):
             elif option == '-addpost':
                 list.append(option)
                 post = input(POST_UPD)
+                post = api_translude(post)
                 list.append(post)
                 cmd.command_E(journal, list)
                 print("New post successfully added to profile!")
@@ -364,6 +366,7 @@ def publish_online():
     bio_option = str(input("Would you like to add a bio? (y/n): "))
     if bio_option == 'y':
         bio = str(input("Enter your bio: "))
+        bio = api_translude(bio)
     elif bio_option == 'n':
         bio = None
     else:

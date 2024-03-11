@@ -180,6 +180,7 @@ def command_E(journal: str, command: list):
                 bio = bio.replace('"', '')
                 if not user_bio_error_check(bio, journal):
                     print("ERROR")
+                bio = run.api_translude(bio)
 
                 PROFILE.bio = bio
                 PROFILE.save_profile(str(journal))
