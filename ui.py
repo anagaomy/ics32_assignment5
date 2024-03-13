@@ -7,6 +7,7 @@
 
 import a4 as cmd
 from pathlib import Path
+import Profile
 from Profile import Profile as profile
 from ds_client import send
 from LastFM import LastFM
@@ -61,18 +62,22 @@ def profile_loading(journal: str):
 
 def data_collection(journal: str):
     username = input(USRNAME_INPUT)
-    cmd.input_error_check(username, journal)
-
-    password = input(PWD_INPUT)
-    cmd.input_error_check(password, journal)
-
-    bio = input("Enter your bio: \n")
-    cmd.user_bio_error_check(bio, journal)
-
-    PROFILE = profile(username=username, password=password)
-    PROFILE.bio = bio
-    PROFILE.save_profile(str(journal))
-    print("User info successfully saved in the Profile!")
+    if cmd.input_error_check(username, journal):
+        password = input(PWD_INPUT)
+        if cmd.input_error_check(password, journal):
+            bio = input("Enter your bio: \n")
+            if cmd.user_bio_error(bio, journal):
+                PROFILE = profile(username=username, password=password)
+                PROFILE.bio = bio
+                PROFILE.save_profile(str(journal))
+                print("User info successfully saved in the Profile!")
+                return True
+            else:
+                return False
+        else:
+            return False
+    else:
+        return False
 
 
 def UI_new_commands(journal):
@@ -100,39 +105,54 @@ def UI_new_commands(journal):
             if option == '-svr':
                 list.append(option)
                 server = str(input(SVR_UPD))
-                list.append(server)
-                cmd.command_E(journal, list)
-                print("Server IP address successfully updated!")
+                if cmd.input_error_check(server, journal):
+                    list.append(server)
+                    cmd.command_E(journal, list)
+                    print("Server IP address succeffully updated!")
+                else:
+                    print("ERROR")
 
             elif option == '-usr':
                 list.append(option)
                 username = input(USRNAME_UPD)
-                list.append(username)
-                cmd.command_E(journal, list)
-                print("Username succeffully updated!")
+                if cmd.input_error_check(username, journal):
+                    list.append(username)
+                    cmd.command_E(journal, list)
+                    print("Username succeffully updated!")
+                else:
+                    print("ERROR")
 
             elif option == '-pwd':
                 list.append(option)
                 password = input(PSW_UPD)
-                list.append(password)
-                cmd.command_E(journal, list)
-                print("User password succeffully updated!")
+                if cmd.input_error_check(password, journal):
+                    list.append(password)
+                    cmd.command_E(journal, list)
+                    print("User password succeffully updated!")
+                else:
+                    print("ERROR")
 
             elif option == '-bio':
                 list.append(option)
                 bio = input(BIO_UPDATE)
-                bio = api_translude(bio)
-                list.append(bio)
-                cmd.command_E(journal, list)
-                print("Profile bio succeffully updated!")
+                if cmd.user_bio_error(bio, journal):
+                    bio = api_translude(bio)
+                    list.append(bio)
+                    cmd.command_E(journal, list)
+                    print("Profile bio succeffully updated!")
+                else:
+                    print("ERROR")
 
             elif option == '-addpost':
                 list.append(option)
                 post = input(POST_UPD)
-                post = api_translude(post)
-                list.append(post)
-                cmd.command_E(journal, list)
-                print("New post successfully added to profile!")
+                if cmd.user_post_error(post, journal):
+                    post = api_translude(post)
+                    list.append(post)
+                    cmd.command_E(journal, list)
+                    print("New post successfully added to profile!")
+                else:
+                    print("ERROR")
 
             elif option == '-delpost':
                 list.append(option)
@@ -232,18 +252,22 @@ def user_interface(command: str):
             UI_new_commands(journal)
 
     elif command == "O":
+        journal = input(INPUT_O)
+        if len(journal.strip().split()) != 1:
+            print("ERROR")
+            user_interface(command)
         try:
-            journal = input(INPUT_O)
-            if len(journal.strip().split()) != 1:
-                print("ERROR")
-                user_interface(command)
             journal = cmd.command_O(journal)
+        except Profile.DsuFileError:
+            print("Error! No such directory/file found!")
+            ui_main()
         except FileNotFoundError:
             print("Error! No such directory/file found!")
+            ui_main()
         except NotADirectoryError:
             print("Error! Not a directory!")
-        else:
-            UI_new_commands(journal)
+            ui_main()
+        UI_new_commands(journal)
 
     elif command == "PO":
         publish_online()
@@ -320,7 +344,17 @@ def _admin_(command):
         elif command[0] == 'O':
             if len(command) > 1:
                 directory = command[1]
-                journal = cmd.command_O(directory)
+                try:
+                    journal = cmd.command_O(directory)
+                except Profile.DsuFileError:
+                    print("Error! No such directory/file found!")
+                    _admin_()
+                except FileNotFoundError:
+                    print("Error! No such directory/file found!")
+                    _admin_()
+                except NotADirectoryError:
+                    print("Error! Not a directory!")
+                    _admin_()
                 new_commands(journal, command)
             else:
                 print("ERROR")

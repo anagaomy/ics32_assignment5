@@ -8,6 +8,7 @@ import profile
 import ui as run
 from pathlib import Path
 import pathlib
+import Profile
 from Profile import Profile as profile
 from Profile import Post as post
 from ds_client import send
@@ -18,28 +19,32 @@ def input_error_check(data: str, journal):
         print("Do NOT contain whitespace!")
         Path(journal).unlink()
         return False
+    else:
+        return True
 
 
-def user_bio_error_check(data: str, journal):
+def user_bio_error(data: str, journal):
     if len(data) == 0:
-        print("Error! Invalid bio!")
+        print("Invalid Bio!")
+        Path(journal).unlink()
+        return False
+    if data.isspace():
+        print("Invalid bio!")
         Path(journal).unlink()
         return False
     else:
-        if data.isspace():
-            print("Error! Invalid bio!")
-            Path(journal).unlink()
-            return False
+        return True
 
 
-def user_post_error_check(data: str):
+def user_post_error(data: str):
     if len(data) == 0:
-        print("Error! Invalid post!")
+        print("Invalid post!")
+        return False
+    if data.isspace():
+        print("Invalid post!")
         return False
     else:
-        if data.isspace():
-            print("Error! Invalid post!")
-            return False
+        return True
 
 
 def list_contents(directory):
@@ -178,7 +183,7 @@ def command_E(journal: str, command: list):
                 bio = ' '.join(bio)
                 bio = bio.replace("'", "")
                 bio = bio.replace('"', '')
-                if not user_bio_error_check(bio, journal):
+                if not user_bio_error(bio, journal):
                     print("ERROR")
                 bio = run.api_translude(bio)
 
@@ -190,7 +195,7 @@ def command_E(journal: str, command: list):
                 entry = ' '.join(entry)
                 entry = entry.replace("'", "")
                 entry = entry.replace('"', '')
-                if not user_post_error_check(entry):
+                if not user_post_error(entry):
                     print("ERROR")
                 entry = run.api_translude(entry)
 
@@ -253,7 +258,7 @@ def command_P(journal: str, command: list):
                 count = len(PROFILE._posts)
                 print("Posts:")
                 for post in range(count):
-                    print(f"Post {post+1}: {PROFILE._posts[post]["entry"]}")
+                    print(f"Post {post+1}: {PROFILE._posts[post]['entry']}")
 
             elif j == '-post':
                 if len(command) == 1:
@@ -274,7 +279,7 @@ def command_P(journal: str, command: list):
                 print("Posts: ")
                 count = len(PROFILE._posts)
                 for post in range(count):
-                    print(f"Post {post+1}: {PROFILE._posts[post]["entry"]}")
+                    print(f"Post {post+1}: {PROFILE._posts[post]['entry']}")
 
             elif j == '-publish':
                 index = command.index(j) + 1
@@ -297,23 +302,21 @@ def command_P(journal: str, command: list):
 
 
 def command_O(journal: str):
-    try:
-        if str(journal).endswith('.dsu'):
+    if str(journal).endswith('.dsu'):
+        if Path(journal).exists():
+            run.profile_loading(str(journal))
+        else:
+            raise Profile.DsuFileError(Exception)
+    else:
+        if Path(journal).suffix == '':
+            journal = str(journal) + '.dsu'
             if Path(journal).exists():
                 run.profile_loading(str(journal))
             else:
-                raise profile.DsuFileError(Exception)
+                raise Profile.DsuFileError(Exception)
         else:
-            if Path(journal).suffix == '':
-                journal = str(journal) + '.dsu'
-                if Path(journal).exists():
-                    run.profile_loading(str(journal))
-            else:
-                raise profile.DsuFileError(Exception)
-    except Exception:
-        print("Error! DSU could not be found!")
-    else:
-        return journal
+            raise Profile.DsuFileError(Exception)
+    return journal
 
 
 def new_file(command, directory):
