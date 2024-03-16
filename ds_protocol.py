@@ -8,9 +8,8 @@ import json
 from collections import namedtuple
 from Profile import Post
 
-# Namedtuple to hold the values retrieved from json messages.
+
 RESPONSE = namedtuple('RESPONSE', ['type', 'msg', 'token'])
-# MESSAGE = namedtuple("messages", ["message", "from", "timestamp"])
 
 
 def extract_json(json_msg: str) -> RESPONSE:
@@ -135,4 +134,3 @@ def dm_all(token: str):
         "directmessage": "all"
     })
     return directMessageAll
-

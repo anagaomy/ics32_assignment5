@@ -43,5 +43,6 @@ class TestDSProtocol(unittest.TestCase):
         self.assertIsInstance(newMsg, str)
         self.assertEqual(newMsg, '{"token": "12345", "directmessage": "all"}')
 
+
 if __name__ == '__main__':
     unittest.main()
