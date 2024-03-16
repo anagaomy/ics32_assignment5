@@ -33,19 +33,6 @@ def extract_json(json_msg: str) -> RESPONSE:
         return RESPONSE(type, msg, None)
 
 
-def response_msg(directMsg: str):
-    try:
-        json_msg = json.loads(directMsg)
-        response = json_msg['response']
-        _type = response['type']
-        messages = response['messages']
-        return RESPONSE(_type, messages)
-
-    except json.JSONDecodeError:
-        print("Json cannot be decoded.")
-        return RESPONSE(_type, messages)
-
-
 def join(username, password):
     join_msg = json.dumps({
         "join": {
@@ -81,22 +68,57 @@ def bio(token, bio):
     return bio_msg
 
 
-def direct_message(token, username, message):
+def msg_response(directMsg: str):
+    try:
+        json_msg = json.loads(directMsg)
+        response = json_msg['response']
+        _type = response['type']
+        message = response['message']
+        return RESPONSE(_type, message, None)
+
+    except json.JSONDecodeError:
+        print("Json cannot be decoded.")
+        return RESPONSE(_type, message, None)
+
+
+def request_response(directMsg: str) -> RESPONSE:
+    try:
+        json_msg = json.loads(directMsg)
+        response = json_msg['response']
+        _type = response['type']
+        messages = response['messages']
+        return RESPONSE(_type, messages, None)
+
+    except json.JSONDecodeError:
+        print("Json cannot be decoded.")
+        return RESPONSE(_type, messages, None)
+
+
+def direct_message(token, recipient, message):
     msg = Post(entry=message)
     directMsg = json.dumps({
         "token": token,
         "directmessage": {
             "entry": message,
-            "recipient": username,
+            "recipient": recipient,
             "timestamp": msg.timestamp
         }
     })
     return directMsg
 
 
-def request_msg(token, message):
-    requestMsg = json.dumps({
+def dm_new(token):
+    directMessageNew = json.dumps({
         "token": token,
-        "directmessage": message
+        "directmessage": "new"
     })
-    return requestMsg
+    return directMessageNew
+
+
+def dm_all(token):
+    directMessageAll = json.dumps({
+        "token": token,
+        "directmessage": "all"
+    })
+    return directMessageAll
+
