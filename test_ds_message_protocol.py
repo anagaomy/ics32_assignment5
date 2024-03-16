@@ -5,26 +5,43 @@
 # 26384258
 
 import unittest
-from ds_protocol import extract_json, direct_message
+import ds_protocol
 
-class TestDirectMessageProtocol(unittest.TestCase):
+class TestDSProtocol(unittest.TestCase):
 
-    # Test
-    def test_extract_message_1(self):
-        json_string = '{"response": {"type": "ok", "can_read": true}}'
-        dtype, msg = extract_json(json_string)
-        self.assertIsInstance(dtype, str)
+    def test_direct_message(self):
+        msg = ds_protocol.direct_message("12345",
+                             "ohhimark",
+                             "Hello world!")
+
         self.assertIsInstance(msg, str)
 
-    # Test direct message
-    def test_dm_protocol_1(self):
-        # Create a test message
-        msg = direct_message("user_token",
-                             "some_recipient",
-                             "Hello world")
-
-        # Make sure it is a string
+        self.assertNotEqual(msg, '{"token": "12345", "directmessage": {"entry": "Hello world!", "recipient": "ohhimark"}}')
+        
+    def test_msg_response(self):
+        msg = '{"response": {"type": "ok", "message": "Direct message sent"}}'
+        response = ds_protocol.msg_response(msg)
         self.assertIsInstance(msg, str)
 
-        # Test that the string matches your expected result
-        self.assertEqual(msg, '{"token": "user_token", "directmessage": {"message": "Hello world", "recipient": "some_recipient", "timestamp": "1604552158.788"}}')
+        self.assertEqual(response, {"type": "ok", "message": "Direct message sent"})
+    
+    def test_request_response(self):
+        msg = '{"response": {"type": "ok", "messages": [{"message":"Hello User 1!", "from":"markb", "timestamp":"1603167689.3928561"}, {"message":"Bzzzzz", "from":"thebeemoviescript", "timestamp":"1603167689.3928561"}]}}'
+        response = ds_protocol.request_response(msg)
+        self.assertIsInstance(msg, str)
+
+        self.assertEqual(response, {'type': 'ok', 'messages': {'markb': {'msg': 'Hello User 1!', 'timestamp': '1603167689.3928561'}, 'thebeemoviescript': {'msg': 'Bzzzzz', 'timestamp': '1603167689.3928561'}}})
+
+    def test_dm_new(self):
+        newMsg = ds_protocol.dm_new('12345')
+        self.assertIsInstance(newMsg, str)
+        self.assertEqual(newMsg, '{"token": "12345", "directmessage": "new"}')
+
+
+    def dm_all(self):
+        newMsg = ds_protocol.dm_all('12345')
+        self.assertIsInstance(newMsg, str)
+        self.assertEqual(newMsg, '{"token": "12345", "directmessage": "all"}')
+
+if __name__ == '__main__':
+    unittest.main()

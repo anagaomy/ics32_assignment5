@@ -10,6 +10,7 @@ from Profile import Post
 
 # Namedtuple to hold the values retrieved from json messages.
 RESPONSE = namedtuple('RESPONSE', ['type', 'msg', 'token'])
+# MESSAGE = namedtuple("messages", ["message", "from", "timestamp"])
 
 
 def extract_json(json_msg: str) -> RESPONSE:
@@ -74,24 +75,37 @@ def msg_response(directMsg: str):
         response = json_msg['response']
         _type = response['type']
         message = response['message']
-        return RESPONSE(_type, message, None)
+        response_dict = {
+            "type" : _type,
+            "message": message
+            }
+        return response_dict
 
     except json.JSONDecodeError:
         print("Json cannot be decoded.")
-        return RESPONSE(_type, message, None)
+        return
 
 
-def request_response(directMsg: str) -> RESPONSE:
+def request_response(directMsg: str):
     try:
         json_msg = json.loads(directMsg)
         response = json_msg['response']
         _type = response['type']
-        messages = response['messages']
-        return RESPONSE(_type, messages, None)
+        msg_dict = {}
+        for item in json_msg['response']['messages']:
+            msg_dict[item['from']] = {
+                'msg': item['message'],
+                'timestamp': item['timestamp']
+                }
+        response_dict = {
+            "type" : _type,
+            "messages": msg_dict
+            }
+        return response_dict
 
     except json.JSONDecodeError:
         print("Json cannot be decoded.")
-        return RESPONSE(_type, messages, None)
+        return
 
 
 def direct_message(token, recipient, message):
@@ -107,7 +121,7 @@ def direct_message(token, recipient, message):
     return directMsg
 
 
-def dm_new(token):
+def dm_new(token: str):
     directMessageNew = json.dumps({
         "token": token,
         "directmessage": "new"
@@ -115,7 +129,7 @@ def dm_new(token):
     return directMessageNew
 
 
-def dm_all(token):
+def dm_all(token: str):
     directMessageAll = json.dumps({
         "token": token,
         "directmessage": "all"
