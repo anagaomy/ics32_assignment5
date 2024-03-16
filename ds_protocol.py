@@ -66,3 +66,16 @@ def bio(token, bio):
         }
     })
     return bio_msg
+
+
+def direct_message(token, username, message):
+    msg = Post(entry=message)
+    directMsg = json.dumps({
+        "token": token,
+        "directmessage": {
+            "entry": message,
+            "recipient": username,
+            "timestamp": msg.timestamp
+        }
+    })
+    return directMsg
