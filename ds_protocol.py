@@ -79,3 +79,11 @@ def direct_message(token, username, message):
         }
     })
     return directMsg
+
+
+def request_msg(token, message):
+    requestMsg = json.dumps({
+        "token": token,
+        "directmessage": message
+    })
+    return requestMsg
