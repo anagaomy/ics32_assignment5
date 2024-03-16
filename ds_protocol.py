@@ -33,6 +33,19 @@ def extract_json(json_msg: str) -> RESPONSE:
         return RESPONSE(type, msg, None)
 
 
+def response_msg(directMsg: str):
+    try:
+        json_msg = json.loads(directMsg)
+        response = json_msg['response']
+        _type = response['type']
+        messages = response['messages']
+        return RESPONSE(_type, messages)
+
+    except json.JSONDecodeError:
+        print("Json cannot be decoded.")
+        return RESPONSE(_type, messages)
+
+
 def join(username, password):
     join_msg = json.dumps({
         "join": {
