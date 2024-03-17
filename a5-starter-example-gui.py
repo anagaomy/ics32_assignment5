@@ -162,12 +162,18 @@ class MainApp(tk.Frame):
 
     def send_message(self):
         message = self.body.get_text_entry()
-        recipient = self.body.node_select()
-        success = self.direct_messenger.send(message, recipient)
-        if success:
-            self.body.insert_user_message(message)
+        if self.recipient == None:
+            self.footer.footer_label.configure(text="ERROR! No recipient selected!")
         else:
-            print("Message not sent.")
+            if message == '' or message.isspace():
+                self.footer.footer_label.configure(text="ERROR! INVALID MESSAGE!")
+            else:
+                if self.direct_messenger.send(message, self.recipient):
+                    self.footer.footer_label.configure(text="Sent Direct Message.")
+                    self.body.insert_user_message(message)
+                else:
+                    self.footer.footer_label.configure(text="ERROR! Cannot process request.")
+        self.body.set_text_entry("")
 
     def add_contact(self):
         new_contact = simpledialog.askstring("New Contact:",
@@ -185,20 +191,19 @@ class MainApp(tk.Frame):
         self.username = ud.user
         self.password = ud.pwd
         self.server = ud.server
-        # You must implement this!
-        # You must configure and instantiate your
-        # DirectMessenger instance after this line.
+        self.direct_messenger = DirectMessage(self.server, 
+                                              self.username,
+                                              self.password)
 
     def publish(self, message:str):
-        # You must implement this!
         pass
 
     def check_new(self):
-        # You must implement this!
-        pass
+        messages = self.direct_messenger.retrieve_new()
+        for message in messages:
+            self.body.insert_contact_message(message)
 
     def _draw(self):
-        # Build a menu and add it to the root frame.
         menu_bar = tk.Menu(self.root)
         self.root['menu'] = menu_bar
         menu_file = tk.Menu(menu_bar)
