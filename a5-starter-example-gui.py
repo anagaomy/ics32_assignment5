@@ -3,8 +3,12 @@
 # 26384258
 
 import tkinter as tk
+from tkinter import simpledialog
 from tkinter import ttk, filedialog
 from typing import Text
+from ds_messenger import DirectMessenger
+from ds_messenger import DirectMessage
+import ds_protocol
 
 
 class Body(tk.Frame):
@@ -133,6 +137,13 @@ class NewContactDialog(tk.simpledialog.Dialog):
         self.user = self.username_entry.get()
         self.pwd = self.password_entry.get()
         self.server = self.server_entry.get()
+    
+    def validate_password(self):
+        password_text = self.server_entry.get()
+        if ("" == password_text):
+            return False
+        else:
+            return True
 
 
 class MainApp(tk.Frame):
@@ -142,27 +153,28 @@ class MainApp(tk.Frame):
         self.username = None
         self.password = None
         self.server = None
-        self.recipient = None
-        # You must implement this! You must configure and
-        # instantiate your DirectMessenger instance after this line.
-        #self.direct_messenger = ... continue!
-
-        # After all initialization is complete,
-        # call the _draw method to pack the widgets
-        # into the root frame
+        self.recipient = None  
+        self.direct_messenger = DirectMessenger(self.server,
+                                                self.username,
+                                                self.password)
         self._draw()
-        self.body.insert_contact("studentexw23") # adding one example student.
+        self.body.insert_contact("BLACKPINK") # adding one example student.
 
     def send_message(self):
-        # You must implement this!
-        pass
+        message = self.body.get_text_entry()
+        recipient = self.body.node_select()
+        success = self.direct_messenger.send(message, recipient)
+        if success:
+            self.body.insert_user_message(message)
+        else:
+            print("Message not sent.")
 
     def add_contact(self):
-        # You must implement this!
-        # Hint: check how to use tk.simpledialog.askstring to retrieve
-        # the name of the new contact, and then use one of the body
-        # methods to add the contact to your contact list
-        pass
+        new_contact = simpledialog.askstring("New Contact:",
+                                             "Enter new contact name.", 
+                                             parent=self.body)
+        if new_contact:
+            self.body.insert_contact(new_contact)
 
     def recipient_selected(self, recipient):
         self.recipient = recipient
