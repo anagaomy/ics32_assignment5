@@ -75,12 +75,6 @@ def msg_response(directMsg: str):
         _type = response['type']
         message = response['message']
 
-        # response_dict = {
-        #     "type" : _type,
-        #     "message": message
-        #     }
-        # return response_dict
-
         return RESPONSE(_type, message, None)
 
     except json.JSONDecodeError:
