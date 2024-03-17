@@ -74,15 +74,18 @@ def msg_response(directMsg: str):
         response = json_msg['response']
         _type = response['type']
         message = response['message']
-        response_dict = {
-            "type" : _type,
-            "message": message
-            }
-        return response_dict
+
+        # response_dict = {
+        #     "type" : _type,
+        #     "message": message
+        #     }
+        # return response_dict
+
+        return RESPONSE(_type, message, None)
 
     except json.JSONDecodeError:
         print("Json cannot be decoded.")
-        return
+        return RESPONSE(_type, message, None)
 
 
 def request_response(directMsg: str):

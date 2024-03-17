@@ -20,10 +20,12 @@ class TestDSProtocol(unittest.TestCase):
         
     def test_msg_response(self):
         msg = '{"response": {"type": "ok", "message": "Direct message sent"}}'
-        response = ds_protocol.msg_response(msg)
+        _type, message, token = ds_protocol.msg_response(msg)
         self.assertIsInstance(msg, str)
 
-        self.assertEqual(response, {"type": "ok", "message": "Direct message sent"})
+        self.assertEqual(_type, "ok")
+        self.assertEqual(message, "Direct message sent")
+        self.assertEqual(token, None)
     
     def test_request_response(self):
         msg = '{"response": {"type": "ok", "messages": [{"message":"Hello User 1!", "from":"markb", "timestamp":"1603167689.3928561"}, {"message":"Bzzzzz", "from":"thebeemoviescript", "timestamp":"1603167689.3928561"}]}}'
