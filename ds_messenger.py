@@ -137,7 +137,7 @@ class DirectMessenger:
                             directMsg.message = _messages[user]['msg']
                             directMsg.timestamp = _messages[user]['timestamp']
                             time = datetime.datetime.fromtimestamp(directMsg.timestamp).strftime('%d/%m/%Y, %H:%M:%S')
-                            print(f"Direct Message for {user} is {directMsg.message} on {time}.")
+                            print(f"New Direct Message for {user} is {directMsg.message} on {time}.")
                             new_msg.append(directMsg)
                         return new_msg
     
@@ -150,5 +150,63 @@ class DirectMessenger:
             return new_msg
 
     def retrieve_all(self) -> list:
-        # must return a list of DirectMessage objects containing all messages
-        pass
+        """
+        return a list of DirectMessage objects containing all messages
+        """
+        all_msg = []
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
+                client.connect((self.server, port))
+                if client is None:
+                    print("Error! Fail to connect to the server!")
+                    return False
+                print("Client succeffully connected to " + f"{self.dsuserver} on {port}")
+
+                join_msg = ds_protocol.join(self.username, self.password)
+
+                send = client.makefile('w')
+                recv = client.makefile('r')
+
+                send.write(join_msg + '\r\n')
+                send.flush()
+
+                response = recv.readline()
+                _type, _msg, _token = ds_protocol.extract_json(response)
+
+                if _type == "error":
+                    print(_msg)
+                    return False
+                
+                elif _type == "ok":
+                    self.token = _token
+                    directMsgNew = ds_protocol.dm_all(self.token)
+
+                    send = client.makefile('w')
+                    recv = client.makefile('r')
+
+                    send.write(directMsgNew + '\r\n')
+                    send.flush()
+
+                    MSG = recv.readline()
+                    dm_dict = ds_protocol(MSG)
+                    _type = dm_dict['type']
+                    _messages = dm_dict['messages']
+
+                    if _type == "ok":
+                        for user in _messages:
+                            directMsg = DirectMessage()
+                            directMsg.recipient = user
+                            directMsg.message = _messages[user]['msg']
+                            directMsg.timestamp = _messages[user]['timestamp']
+                            time = datetime.datetime.fromtimestamp(directMsg.timestamp).strftime('%d/%m/%Y, %H:%M:%S')
+                            print(f"Direct Message for {user} is {directMsg.message} on {time}.")
+                            all_msg.append(directMsg)
+                        return all_msg
+    
+                    else:
+                        print("ERROR")
+                        return all_msg
+
+        except Exception:
+            print("Something wrong with the server")
+            return all_msg
