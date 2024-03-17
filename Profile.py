@@ -105,6 +105,33 @@ class Profile:
         self.bio = ''             # OPTIONAL
         self._posts = []          # OPTIONAL
 
+        self.friends = []
+        self._messages_all = []
+        self._messages_new = []
+    
+    def add_message(self, message, recipient):
+        self._messages_new.append((recipient, message))
+    
+    def push_socMessage(self, recipient, message):
+        self._messages_all.append((recipient, message))
+    
+    def pop_newMessage(self):
+        rec, msg = self._messages_new.pop(-1)
+        self._messages_all.append((rec, msg))
+        return (rec, msg)
+    
+    def get_messages_new(self):
+        return self._messages_new
+    
+    def get_messages_all(self):
+        return self._messages_all
+    
+    def add_friends(self, username):
+        self.friends.append(username)
+    
+    def get_friends(self):
+        return self.friends
+
     """
 
     add_post accepts a Post object as parameter and appends

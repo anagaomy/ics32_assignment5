@@ -7,7 +7,6 @@
 import socket
 import ds_protocol
 import datetime
-# server = '168.235.86.101'
 
 
 class DirectMessage:
@@ -19,7 +18,7 @@ class DirectMessage:
 
 class DirectMessenger:
     def __init__(self, dsuserver=None, username=None, password=None):
-        self.dsuserver = dsuserver
+        self.dsuserver = dsuserver # 168.235.86.101
         self.username = username
         self.password = password
         self.token = None
