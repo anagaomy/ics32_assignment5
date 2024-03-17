@@ -4,14 +4,11 @@
 # gaomy@uci.edu
 # 26384258
 
-import json
 import socket
 import ds_protocol
 import datetime
-
-
 # server = '168.235.86.101'
-port = 3021
+
 
 class DirectMessage:
     def __init__(self):
@@ -33,9 +30,11 @@ class DirectMessenger:
         """
         self.message = message
         self.recipient = recipient
+        port = 3021
+
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-                client.connect((self.server, port))
+                client.connect((self.dsuserver, port))
                 if client is None:
                     print("Error! Fail to connect to the server!")
                     return False
@@ -92,9 +91,11 @@ class DirectMessenger:
         return a list of DirectMessage objects containing all new messages
         """
         new_msg = []
+        port = 3021
+
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-                client.connect((self.server, port))
+                client.connect((self.dsuserver, port))
                 if client is None:
                     print("Error! Fail to connect to the server!")
                     return False
@@ -126,7 +127,7 @@ class DirectMessenger:
                     send.flush()
 
                     MSG = recv.readline()
-                    dm_dict = ds_protocol(MSG)
+                    dm_dict = ds_protocol.request_response(MSG)
                     _type = dm_dict['type']
                     _messages = dm_dict['messages']
 
@@ -140,7 +141,7 @@ class DirectMessenger:
                             print(f"New Direct Message for {user} is {directMsg.message} on {time}.")
                             new_msg.append(directMsg)
                         return new_msg
-    
+
                     else:
                         print("ERROR")
                         return new_msg
@@ -154,9 +155,11 @@ class DirectMessenger:
         return a list of DirectMessage objects containing all messages
         """
         all_msg = []
+        port = 3021
+
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-                client.connect((self.server, port))
+                client.connect((self.dsuserver, port))
                 if client is None:
                     print("Error! Fail to connect to the server!")
                     return False
@@ -188,7 +191,7 @@ class DirectMessenger:
                     send.flush()
 
                     MSG = recv.readline()
-                    dm_dict = ds_protocol(MSG)
+                    dm_dict = ds_protocol.request_response(MSG)
                     _type = dm_dict['type']
                     _messages = dm_dict['messages']
 
@@ -210,3 +213,18 @@ class DirectMessenger:
         except Exception:
             print("Something wrong with the server")
             return all_msg
+
+
+if __name__ == "__main__":
+    dsuserver = '168.235.86.101'
+    username = "BLACKPINK"
+    password = "2016"
+    message = "Hi"
+    recipient = "BTS"
+    DM = DirectMessenger(dsuserver, username, password)
+    DM.send(message, recipient)
+    msg_all = DM.retrieve_all()
+    print(msg_all)
+    msg_new = DM.retrieve_new()
+    print(msg_new)
+
