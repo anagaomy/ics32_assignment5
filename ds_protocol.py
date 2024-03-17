@@ -101,7 +101,7 @@ def request_response(directMsg: str):
 
     except json.JSONDecodeError:
         print("Json cannot be decoded.")
-        return
+        return response_dict
 
 
 def direct_message(token, recipient, message):
