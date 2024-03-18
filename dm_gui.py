@@ -168,13 +168,18 @@ class MainApp(tk.Frame):
                 self.direct_messenger = DirectMessenger(self.server,
                                                         self.username,
                                                         self.password)
+                # for item in self.body.posts_tree.get_children():
+                #     self.body.posts_tree.delete(item)
+                friends = self.profile.get_friends()
+                for friend in friends:
+                    self.body.insert_contact(friend)
             except (DsuProfileError, DsuFileError) as e:
                 print(f"Error loading profile: {e}")
         else:
             self.profile = Profile(self.server, self.username, self.password)
-
-        for recipient in self.profile.get_friends():
-            self.body.insert_contact(recipient)
+            friends = self.profile.get_friends()
+            for recipient in friends:
+                self.body.insert_contact(recipient)
 
     def save_profile(self):
         try:
@@ -225,6 +230,7 @@ class MainApp(tk.Frame):
             self.body.insert_contact(new_contact)
             self.profile.add_friends(new_contact)
             self.save_profile()
+            print("New contact added")
         else:
             if new_contact == None:
                 self.footer.footer_label.configure(text="Cancelled by user.")
@@ -248,9 +254,12 @@ class MainApp(tk.Frame):
         pass
 
     def check_new(self):
-        messages = self.direct_messenger.retrieve_new()
-        for dm in messages:
-            self.body.insert_contact_message(dm)
+        if self.direct_messenger is not None:
+            messages = self.direct_messenger.retrieve_new()
+            for dm in messages:
+                self.body.insert_contact_message(dm)
+        else:
+            print("Error: DirectMessenger not properly initialized.")
 
     def _draw(self):
         menu_bar = tk.Menu(self.root)

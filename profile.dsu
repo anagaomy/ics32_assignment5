@@ -5,9 +5,23 @@
     "bio": "BLACKPINK in your area!",
     "_posts": [],
     "friends": [
-        "BLACKPINK",
-        "BTS"
+        "BTS",
+        "IVE"
     ],
-    "_messages_all": [],
+    "_messages_all": [
+        {
+            "BTS": [
+                "heyy",
+                "hiii bts",
+                "butter"
+            ]
+        },
+        {
+            "IVE": [
+                "baddie",
+                "mine"
+            ]
+        }
+    ],
     "_messages_new": []
 }

@@ -13,4 +13,16 @@
             "timestamp": 1710033676.3282182
         }
     ]
+    "friends": [
+        "BLACKPINK",
+        "BTS"
+    ],
+    "_messages_all": [
+        {
+            "BTS": [
+                "hii"
+            ]
+        }
+    ],
+    "_messages_new": []
 }

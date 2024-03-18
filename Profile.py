@@ -102,36 +102,33 @@ class Profile:
 
     """
 
-    def __init__(self, dsuserver=None, username=None, password=None):
+    def __init__(self, dsuserver=None, username=None, password=None,
+                 friends: list=None, msg_all: list=None, msg_new: list=None):
         self.dsuserver = dsuserver  # REQUIRED
         self.username = username  # REQUIRED
         self.password = password  # REQUIRED
         self.bio = ''             # OPTIONAL
         self._posts = []          # OPTIONAL
 
-        self.friends = []
-        self._messages_all = []
-        self._messages_new = []
-    
+        self.friends = friends if friends is not None else []
+        self._messages_all = msg_all if msg_all is not None else []
+        self._messages_new = msg_new if msg_new is not None else []
+
     def add_message(self, message, recipient):
         for msg_dict in self._messages_new:
             if recipient in msg_dict:
-                msg_new.append(message)
+                msg_dict[recipient].append(message)
                 break
-            else:
-                msg_new = []
-                msg_new.append(message)
-                self._messages_new.append({recipient: msg_new})
+        else:
+            self._messages_new.append({recipient: [message]})
 
     def push_socMessage(self, recipient, message):
         for msg_dict in self._messages_all:
             if recipient in msg_dict:
-                msg_all.append(message)
+                msg_dict[recipient].append(message)
                 break
-            else:
-                msg_all = []
-                msg_all.append(message)
-                self._messages_all.append({recipient: msg_all})
+        else:
+            self._messages_all.append({recipient: [message]})
     
     def pop_newMessage(self):
         rec, msg = self._messages_new.pop(-1)
@@ -249,13 +246,9 @@ class Profile:
                 self.password = obj['password']
                 self.dsuserver = obj['dsuserver']
                 self.bio = obj['bio']
-                self.friends = obj['friends']
-                messages_all = obj['_messages_all']
-                for dm_dict in messages_all:
-                    self._messages_all.append(dm_dict)
-                messages_new = obj['_messages_new']
-                for dm_dict in messages_new:
-                    self._messages_new.append(dm_dict)
+                self.friends = obj.get('friends', [])
+                self._messages_all = obj.get('_messages_all', [])
+                self._messages_new = obj.get('_messages_new', [])
                 posts = obj['_posts']
                 for post_obj in posts:
                     post = Post(post_obj['entry'], post_obj['timestamp'])
