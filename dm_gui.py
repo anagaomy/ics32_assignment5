@@ -8,7 +8,8 @@ from tkinter import ttk, filedialog
 from typing import Text
 from ds_messenger import DirectMessenger
 from ds_messenger import DirectMessage
-from Profile import Profile
+from Profile import Profile, DsuProfileError, DsuFileError
+from pathlib import Path
 
 
 class Body(tk.Frame):
@@ -148,36 +149,54 @@ class MainApp(tk.Frame):
         self.server = server
         self.recipient = None  
         self.node_selected = None
-        self.profile = None
         self.direct_messenger = None
         self._messages_new = None
         self._messages_all = None
-        self.load_account(self.username, self.password, self.server)
-        self.direct_messenger = DirectMessenger(self.server,
-                                                self.username,
-                                                self.password)
-        self._draw()
-        # self.body.insert_contact("BTS") # adding one example student.
 
-    def load_account(self, username, password, server):
-        self.profile = Profile(server, username, password)
+        self._draw()
+        self.load_profile()
+
+    def load_profile(self):
+        profile_file = "profile.dsu"
+        if Path(profile_file).is_file():
+            try:
+                self.profile = Profile()
+                self.profile.load_profile(profile_file)
+                self.username = self.profile.username
+                self.password = self.profile.password
+                self.server = self.profile.dsuserver
+                self.direct_messenger = DirectMessenger(self.server,
+                                                        self.username,
+                                                        self.password)
+            except (DsuProfileError, DsuFileError) as e:
+                print(f"Error loading profile: {e}")
+        else:
+            self.profile = Profile(self.server, self.username, self.password)
+
         for recipient in self.profile.get_friends():
             self.body.insert_contact(recipient)
+
+    def save_profile(self):
+        try:
+            self.profile.save_profile("profile.dsu")
+        except DsuFileError as e:
+            print(f"Error saving profile: {e}")
 
     def select_in_body(self, node):
         self.node_selected = node
         self.body.entry_editor.configure(state='normal')
         self.body.entry_editor.delete(1.0, tk.END) 
         self.body.entry_editor.configure(state='disabled')
-        
-        recipient = self.profile.get_messages_new()[node][0]
-        for (rec, msg) in self.profile.get_messages_new():
-            if rec == recipient:
-                self.body.insert_contact_message(msg)
-        
-        for (rec, msg) in self._messages_all:
-            if rec == recipient:
-                self.body.insert_contact_message(msg)
+        index = self.body._contacts.index(node)
+        recipient = self.profile.get_friends()[index]
+
+        messages = self.profile.get_messages_all()
+        for message_dict in messages:
+            for recipient, messages in dict(message_dict).items():
+                if recipient == node:
+                    for msg in messages:
+                        self.body.insert_contact_message(msg)
+                        break
 
         self.footer.footer_label.configure(text=f"Selected: {node}")
 
@@ -192,6 +211,8 @@ class MainApp(tk.Frame):
                 if self.direct_messenger.send(message, self.recipient):
                     self.footer.footer_label.configure(text="Sent Direct Message.")
                     self.body.insert_user_message(message)
+                    self.profile.push_socMessage(self.recipient, message)
+                    self.save_profile()
                 else:
                     self.footer.footer_label.configure(text="ERROR! Cannot process request.")
         self.body.set_text_entry("")
@@ -202,14 +223,16 @@ class MainApp(tk.Frame):
                                              parent=self.body)
         if new_contact:
             self.body.insert_contact(new_contact)
+            self.profile.add_friends(new_contact)
+            self.save_profile()
         else:
             if new_contact == None:
-                self.footer.footer_label.configure(text="Cancled by user.")
+                self.footer.footer_label.configure(text="Cancelled by user.")
             else:
-                self.footer.footer_label.configure(text="ERROR! Contact already exist!")
+                self.footer.footer_label.configure(text="ERROR! Contact already exists!")
 
-    def recipient_selected(self, recipient):
-        self.recipient = recipient
+    def recipient_selected(self, rec):
+        self.recipient = rec
 
     def configure_server(self):
         ud = NewContactDialog(self.root, "Configure Account",
@@ -227,8 +250,7 @@ class MainApp(tk.Frame):
     def check_new(self):
         messages = self.direct_messenger.retrieve_new()
         for dm in messages:
-            message = dm.message
-            self.body.insert_contact_message(message)
+            self.body.insert_contact_message(dm)
 
     def _draw(self):
         menu_bar = tk.Menu(self.root)
@@ -246,7 +268,7 @@ class MainApp(tk.Frame):
                                   command=self.add_contact)
         settings_file.add_command(label='Configure DS Server',
                                   command=self.configure_server)
-
+    
         self.body = Body(self.root,
                          recipient_selected_callback=self.recipient_selected)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)

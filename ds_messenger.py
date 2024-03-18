@@ -202,7 +202,7 @@ class DirectMessenger:
                             directMsg.timestamp = _messages[user]['timestamp']
                             time = datetime.datetime.fromtimestamp(directMsg.timestamp).strftime('%d/%m/%Y, %H:%M:%S')
                             print(f"Direct Message for {user} is {directMsg.message} on {time}.")
-                            all_msg.append(directMsg)
+                            all_msg.append(directMsg.message)
                         return all_msg
     
                     else:

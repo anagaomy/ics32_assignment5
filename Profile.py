@@ -114,10 +114,24 @@ class Profile:
         self._messages_new = []
     
     def add_message(self, message, recipient):
-        self._messages_new.append((recipient, message))
-    
+        for msg_dict in self._messages_new:
+            if recipient in msg_dict:
+                msg_new.append(message)
+                break
+            else:
+                msg_new = []
+                msg_new.append(message)
+                self._messages_new.append({recipient: msg_new})
+
     def push_socMessage(self, recipient, message):
-        self._messages_all.append((recipient, message))
+        for msg_dict in self._messages_all:
+            if recipient in msg_dict:
+                msg_all.append(message)
+                break
+            else:
+                msg_all = []
+                msg_all.append(message)
+                self._messages_all.append({recipient: msg_all})
     
     def pop_newMessage(self):
         rec, msg = self._messages_new.pop(-1)
@@ -206,7 +220,9 @@ class Profile:
                 raise DsuFileError(
                     "Error while attempting to process the DSU file.", ex)
         else:
-            raise DsuFileError("Invalid DSU file path or type")
+            Path(path).touch()
+            self.save_profile(self, path)
+            # raise DsuFileError("Invalid DSU file path or type")
 
     """
 
@@ -233,7 +249,15 @@ class Profile:
                 self.password = obj['password']
                 self.dsuserver = obj['dsuserver']
                 self.bio = obj['bio']
-                for post_obj in obj['_posts']:
+                self.friends = obj['friends']
+                messages_all = obj['_messages_all']
+                for dm_dict in messages_all:
+                    self._messages_all.append(dm_dict)
+                messages_new = obj['_messages_new']
+                for dm_dict in messages_new:
+                    self._messages_new.append(dm_dict)
+                posts = obj['_posts']
+                for post_obj in posts:
                     post = Post(post_obj['entry'], post_obj['timestamp'])
                     self._posts.append(post)
                 f.close()
