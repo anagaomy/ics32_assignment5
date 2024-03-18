@@ -156,15 +156,30 @@ class MainApp(tk.Frame):
         self.direct_messenger = DirectMessenger(self.server,
                                                 self.username,
                                                 self.password)
-        self._draw())
+        self._draw()
         # self.body.insert_contact("BTS") # adding one example student.
-
 
     def load_account(self, username, password, server):
         self.profile = Profile(server, username, password)
-        self.direct_messenger = DirectMessenger(server, username, password)
         for recipient in self.profile.get_friends():
             self.body.insert_contact(recipient)
+
+    def select_in_body(self, node):
+        self.node_selected = node
+        self.body.entry_editor.configure(state='normal')
+        self.body.entry_editor.delete(1.0, tk.END) 
+        self.body.entry_editor.configure(state='disabled')
+        
+        recipient = self.profile.get_messages_new()[node][0]
+        for (rec, msg) in self.profile.get_messages_new():
+            if rec == recipient:
+                self.body.insert_contact_message(msg)
+        
+        for (rec, msg) in self._messages_all:
+            if rec == recipient:
+                self.body.insert_contact_message(msg)
+
+        self.footer.footer_label.configure(text=f"Selected: {node}")
 
     def send_message(self):
         message = self.body.get_text_entry()
@@ -211,7 +226,8 @@ class MainApp(tk.Frame):
 
     def check_new(self):
         messages = self.direct_messenger.retrieve_new()
-        for message in messages:
+        for dm in messages:
+            message = dm.message
             self.body.insert_contact_message(message)
 
     def _draw(self):
