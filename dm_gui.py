@@ -37,7 +37,9 @@ class Body(tk.Frame):
         id = self.posts_tree.insert('', id, id, text=contact)
 
     def insert_user_message(self, message:str):
-        self.entry_editor.insert(1.0, message + '\n', 'entry-right')
+        self.entry_editor.configure(state='normal')
+        self.entry_editor.insert(tk.END, message + '\n', 'entry-right')
+        self.entry_editor.configure(state='disabled')
 
     def insert_contact_message(self, message:str):
         self.entry_editor.insert(1.0, message + '\n', 'entry-left')
@@ -168,8 +170,8 @@ class MainApp(tk.Frame):
                 self.direct_messenger = DirectMessenger(self.server,
                                                         self.username,
                                                         self.password)
-                # for item in self.body.posts_tree.get_children():
-                #     self.body.posts_tree.delete(item)
+                for item in self.body.posts_tree.get_children():
+                    self.body.posts_tree.delete(item)
                 friends = self.profile.get_friends()
                 for friend in friends:
                     self.body.insert_contact(friend)
@@ -188,22 +190,32 @@ class MainApp(tk.Frame):
             print(f"Error saving profile: {e}")
 
     def select_in_body(self, node):
-        self.node_selected = node
+        self.recipient = node
         self.body.entry_editor.configure(state='normal')
         self.body.entry_editor.delete(1.0, tk.END) 
         self.body.entry_editor.configure(state='disabled')
-        index = self.body._contacts.index(node)
-        recipient = self.profile.get_friends()[index]
+        self.display_messages(node)
+        self.footer.footer_label.configure(text=f"Selected: {node}")
 
+    def display_messages(self, recipient):
+        # self.body.entry_editor.configure(state='normal')
+        # self.body.entry_editor.delete(1.0, tk.END) 
+        # self.body.entry_editor.configure(state='disabled')
+
+        # messages = self.direct_messenger.retrieve_all()  # Retrieve all messages
+        # for message in messages:
+        #     sender, msg = message.recipient, message.message
+        #     self.profile.push_socMessage(sender, msg)
+        #     self.save_profile()
+        #     self.profile
         messages = self.profile.get_messages_all()
         for message_dict in messages:
-            for recipient, messages in dict(message_dict).items():
-                if recipient == node:
-                    for msg in messages:
+            for msg_recipient, msg_list in dict(message_dict).items():
+                if msg_recipient == recipient:
+                    for msg in msg_list:
                         self.body.insert_contact_message(msg)
-                        break
-
-        self.footer.footer_label.configure(text=f"Selected: {node}")
+                elif msg_recipient == self.username:
+                    self.body.insert_user_message(msg)
 
     def send_message(self):
         message = self.body.get_text_entry()
@@ -257,7 +269,8 @@ class MainApp(tk.Frame):
         if self.direct_messenger is not None:
             messages = self.direct_messenger.retrieve_new()
             for dm in messages:
-                self.body.insert_contact_message(dm)
+                self.body.insert_contact_message(dm.message)
+                self.profile.push_socMessage(dm.recipient, dm.message)
         else:
             print("Error: DirectMessenger not properly initialized.")
 
@@ -279,7 +292,7 @@ class MainApp(tk.Frame):
                                   command=self.configure_server)
     
         self.body = Body(self.root,
-                         recipient_selected_callback=self.recipient_selected)
+                         recipient_selected_callback=self.select_in_body)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
         self.footer = Footer(self.root, send_callback=self.send_message)
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)

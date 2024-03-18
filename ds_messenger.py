@@ -17,11 +17,12 @@ class DirectMessage:
 
 
 class DirectMessenger:
-    def __init__(self, dsuserver=None, username=None, password=None):
+    def __init__(self, dsuserver=None, username=None, password=None, port=3021):
         self.dsuserver = dsuserver # 168.235.86.101
         self.username = username
         self.password = password
         self.token = None
+        self.port = port
       
     def send(self, message: str, recipient: str) -> bool:
         """
@@ -29,15 +30,14 @@ class DirectMessenger:
         """
         self.message = message
         self.recipient = recipient
-        port = 3021
 
         # try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-            client.connect((self.dsuserver, port))
+            client.connect((self.dsuserver, self.port))
             if client is None:
                 print("Error! Fail to connect to the server!")
                 return False
-            print("Client succeffully connected to " + f"{self.dsuserver} on {port}")
+            print("Client succeffully connected to " + f"{self.dsuserver} on {self.port}")
 
             join_msg = ds_protocol.join(self.username, self.password)
 
@@ -90,15 +90,14 @@ class DirectMessenger:
         return a list of DirectMessage objects containing all new messages
         """
         new_msg = []
-        port = 3021
 
         # try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-            client.connect((self.dsuserver, port))
+            client.connect((self.dsuserver, self.port))
             if client is None:
                 print("Error! Fail to connect to the server!")
                 return False
-            print("Client succeffully connected to " + f"{self.dsuserver} on {port}")
+            print("Client succeffully connected to " + f"{self.dsuserver} on {self.port}")
 
             join_msg = ds_protocol.join(self.username, self.password)
 
@@ -135,10 +134,12 @@ class DirectMessenger:
                         directMsg = DirectMessage()
                         directMsg.recipient = user
                         directMsg.message = _messages[user]['msg']
-                        directMsg.timestamp = _messages[user]['timestamp']
+                        timestamp_str = str(_messages[user]['timestamp'])
+                        timestamp_int = int(timestamp_str.split('.')[0])
+                        directMsg.timestamp = timestamp_int
                         time = datetime.datetime.fromtimestamp(directMsg.timestamp).strftime('%d/%m/%Y, %H:%M:%S')
                         print(f"New Direct Message for {user} is {directMsg.message} on {time}.")
-                        new_msg.append(directMsg.message)
+                        new_msg.append(directMsg)
                     return new_msg
 
                 else:
@@ -154,15 +155,14 @@ class DirectMessenger:
         return a list of DirectMessage objects containing all messages
         """
         all_msg = []
-        port = 3021
 
         # try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
-            client.connect((self.dsuserver, port))
+            client.connect((self.dsuserver, self.port))
             if client is None:
                 print("Error! Fail to connect to the server!")
                 return False
-            print("Client succeffully connected to " + f"{self.dsuserver} on {port}")
+            print("Client succeffully connected to " + f"{self.dsuserver} on {self.port}")
 
             join_msg = ds_protocol.join(self.username, self.password)
 
@@ -199,10 +199,12 @@ class DirectMessenger:
                         directMsg = DirectMessage()
                         directMsg.recipient = user
                         directMsg.message = _messages[user]['msg']
-                        directMsg.timestamp = _messages[user]['timestamp']
+                        timestamp_str = str(_messages[user]['timestamp'])
+                        timestamp_int = int(timestamp_str.split('.')[0])
+                        directMsg.timestamp = timestamp_int
                         time = datetime.datetime.fromtimestamp(directMsg.timestamp).strftime('%d/%m/%Y, %H:%M:%S')
                         print(f"Direct Message for {user} is {directMsg.message} on {time}.")
-                        all_msg.append(directMsg.message)
+                        all_msg.append(directMsg)
                     return all_msg
 
                 else:

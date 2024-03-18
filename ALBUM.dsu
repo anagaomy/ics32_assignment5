@@ -3,24 +3,23 @@
     "username": "BLACKPINK",
     "password": "2016",
     "bio": "BLACKPINK in your area!",
-    "_posts": [
-        {
-            "entry": "Hi it is clear sky today and I am listening to Doctor Doctor",
-            "timestamp": 1710033577.544054
-        },
-        {
-            "entry": "Kill This Love",
-            "timestamp": 1710033676.3282182
-        }
-    ]
+    "_posts": [],
     "friends": [
-        "BLACKPINK",
-        "BTS"
+        "BTS",
+        "IVE"
     ],
     "_messages_all": [
         {
             "BTS": [
-                "hii"
+                "heyy",
+                "hiii bts",
+                "butter"
+            ]
+        },
+        {
+            "IVE": [
+                "baddie",
+                "mine"
             ]
         }
     ],

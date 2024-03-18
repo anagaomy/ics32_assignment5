@@ -6,20 +6,25 @@
     "_posts": [],
     "friends": [
         "BTS",
-        "IVE"
+        "IVE",
+        "BLACKPINK"
     ],
     "_messages_all": [
         {
             "BTS": [
-                "heyy",
-                "hiii bts",
                 "butter"
             ]
         },
         {
             "IVE": [
-                "baddie",
-                "mine"
+                "baddie"
+            ]
+        },
+        {
+            "BLACKPINK": [
+                "KILL THIS LOVE",
+                "KILL THIS LOVE",
+                "HEYYY"
             ]
         }
     ],
