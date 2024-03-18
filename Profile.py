@@ -1,5 +1,9 @@
 # Profile.py
 
+# Ana Gao
+# 26384258
+# gaomy@uci.edu
+
 
 import json
 import time

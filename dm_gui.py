@@ -8,7 +8,7 @@ from tkinter import ttk, filedialog
 from typing import Text
 from ds_messenger import DirectMessenger
 from ds_messenger import DirectMessage
-import ds_protocol
+from Profile import Profile
 
 
 class Body(tk.Frame):
@@ -110,8 +110,8 @@ class NewContactDialog(tk.simpledialog.Dialog):
     def __init__(self, root, title=None, user=None, pwd=None, server=None):
         self.root = root
         self.server = server
-        self.user = user
-        self.pwd = pwd
+        self.user = user # 'BLACKPINK' 
+        self.pwd = pwd # '2016'
         super.__init__(root, title)
 
     def body(self, frame):
@@ -137,28 +137,34 @@ class NewContactDialog(tk.simpledialog.Dialog):
         self.user = self.username_entry.get()
         self.pwd = self.password_entry.get()
         self.server = self.server_entry.get()
-    
-    def validate_password(self):
-        password_text = self.server_entry.get()
-        if ("" == password_text):
-            return False
-        else:
-            return True
 
 
 class MainApp(tk.Frame):
-    def __init__(self, root):
+    def __init__(self, root, username=None, password=None, server=None):
         tk.Frame.__init__(self, root)
         self.root = root
-        self.username = None
-        self.password = None
-        self.server = None
+        self.username = username
+        self.password = password
+        self.server = server
         self.recipient = None  
+        self.node_selected = None
+        self.profile = None
+        self.direct_messenger = None
+        self._messages_new = None
+        self._messages_all = None
+        self.load_account(self.username, self.password, self.server)
         self.direct_messenger = DirectMessenger(self.server,
                                                 self.username,
                                                 self.password)
-        self._draw()
-        self.body.insert_contact("BLACKPINK") # adding one example student.
+        self._draw())
+        # self.body.insert_contact("BTS") # adding one example student.
+
+
+    def load_account(self, username, password, server):
+        self.profile = Profile(server, username, password)
+        self.direct_messenger = DirectMessenger(server, username, password)
+        for recipient in self.profile.get_friends():
+            self.body.insert_contact(recipient)
 
     def send_message(self):
         message = self.body.get_text_entry()
@@ -181,6 +187,11 @@ class MainApp(tk.Frame):
                                              parent=self.body)
         if new_contact:
             self.body.insert_contact(new_contact)
+        else:
+            if new_contact == None:
+                self.footer.footer_label.configure(text="Cancled by user.")
+            else:
+                self.footer.footer_label.configure(text="ERROR! Contact already exist!")
 
     def recipient_selected(self, recipient):
         self.recipient = recipient
@@ -220,8 +231,6 @@ class MainApp(tk.Frame):
         settings_file.add_command(label='Configure DS Server',
                                   command=self.configure_server)
 
-        # The Body and Footer classes must be initialized and
-        # packed into the root window.
         self.body = Body(self.root,
                          recipient_selected_callback=self.recipient_selected)
         self.body.pack(fill=tk.BOTH, side=tk.TOP, expand=True)
@@ -230,41 +239,19 @@ class MainApp(tk.Frame):
 
 
 if __name__ == "__main__":
-    # All Tkinter programs start with a root window. We will name ours 'main'.
     main = tk.Tk()
 
-    # 'title' assigns a text value to the Title Bar area of a window.
     main.title("ICS 32 Distributed Social Messenger")
 
-    # This is just an arbitrary starting point. You can change the value
-    # around to see how the starting size of the window changes.
     main.geometry("720x480")
     main.configure(background='pink')
 
-    # main['bg'] = "#000000"
-    # main['background'] = "#000000"
-
-    # adding this option removes some legacy behavior with menus that
-    # some modern OSes don't support. If you're curious, feel free to comment
-    # out and see how the menu changes.
     main.option_add('*tearOff', False)
 
-    # Initialize the MainApp class, which is the starting point for the
-    # widgets used in the program. All of the classes that we use,
-    # subclass Tk.Frame, since our root frame is main, we initialize
-    # the class with it.
-    app = MainApp(main)
+    app = MainApp(main) # '168.235.86.101'
 
-    # When update is called, we finalize the states of all widgets that
-    # have been configured within the root frame. Here, update ensures that
-    # we get an accurate width and height reading based on the types of widgets
-    # we have used. minsize prevents the root window from resizing too small.
-    # Feel free to comment it out and see how the resizing
-    # behavior of the window changes.
     main.update()
     main.minsize(main.winfo_width(), main.winfo_height())
     id = main.after(2000, app.check_new)
     print(id)
-    # And finally, start up the event loop for the program (you can find
-    # more on this in lectures of week 9 and 10).
     main.mainloop()
