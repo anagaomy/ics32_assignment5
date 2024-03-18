@@ -7,24 +7,31 @@
     "friends": [
         "BTS",
         "IVE",
+        "NewJeans",
         "BLACKPINK"
     ],
     "_messages_all": [
         {
             "BTS": [
-                "butter"
+                "BUTTER",
+                "FIRE"
             ]
         },
         {
             "IVE": [
-                "baddie"
+                "BADDIE"
+            ]
+        },
+        {
+            "NewJeans": [
+                "SUPER SHY",
+                "DITTO"
             ]
         },
         {
             "BLACKPINK": [
                 "KILL THIS LOVE",
-                "KILL THIS LOVE",
-                "HEYYY"
+                "PINK VENOM"
             ]
         }
     ],

@@ -167,6 +167,8 @@ class MainApp(tk.Frame):
                 self.username = self.profile.username
                 self.password = self.profile.password
                 self.server = self.profile.dsuserver
+                self._messages_all = self.profile._messages_all
+                self._messages_new = self.profile._messages_new
                 self.direct_messenger = DirectMessenger(self.server,
                                                         self.username,
                                                         self.password)
@@ -198,9 +200,9 @@ class MainApp(tk.Frame):
         self.footer.footer_label.configure(text=f"Selected: {node}")
 
     def display_messages(self, recipient):
-        # self.body.entry_editor.configure(state='normal')
-        # self.body.entry_editor.delete(1.0, tk.END) 
-        # self.body.entry_editor.configure(state='disabled')
+        self.body.entry_editor.configure(state='normal')
+        self.body.entry_editor.delete(1.0, tk.END) 
+        self.body.entry_editor.configure(state='disabled')
 
         # messages = self.direct_messenger.retrieve_all()  # Retrieve all messages
         # for message in messages:
@@ -210,12 +212,10 @@ class MainApp(tk.Frame):
         #     self.profile
         messages = self.profile.get_messages_all()
         for message_dict in messages:
-            for msg_recipient, msg_list in dict(message_dict).items():
+            for msg_recipient, msg_list in message_dict.items():
                 if msg_recipient == recipient:
                     for msg in msg_list:
-                        self.body.insert_contact_message(msg)
-                elif msg_recipient == self.username:
-                    self.body.insert_user_message(msg)
+                        self.body.insert_user_message(msg)
 
     def send_message(self):
         message = self.body.get_text_entry()
@@ -270,7 +270,7 @@ class MainApp(tk.Frame):
             messages = self.direct_messenger.retrieve_new()
             for dm in messages:
                 self.body.insert_contact_message(dm.message)
-                self.profile.push_socMessage(dm.recipient, dm.message)
+                self.profile.add_message(dm.recipient, dm.message)
         else:
             print("Error: DirectMessenger not properly initialized.")
 
