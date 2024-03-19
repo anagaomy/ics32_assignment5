@@ -162,7 +162,19 @@ class Profile:
                 if message in message_list:
                     for msg in message_list:
                         if msg == message:
-                            return msg.get('timestamp', 0)
+                            return msg['timestamp']
+        return 0
+
+    def get_new_message_time(self, message: str) -> float:
+        """
+        Retrieve the timestamp of a message.
+        """
+        for message_dict in self._messages_new:
+            for msg_recipient, message_list in message_dict.items():
+                if message in message_list:
+                    for msg in message_list:
+                        if msg == message:
+                            return msg['timestamp']
         return 0
 
     """

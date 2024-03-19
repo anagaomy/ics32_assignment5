@@ -214,23 +214,23 @@ class MainApp(tk.Frame):
             for msg_recipient, message_list in message_dict.items():
                 if msg_recipient == recipient:
                     for msg in message_list:
-                        all_messages.append((msg, self.profile.get_all_message_time(msg)))
+                        all_messages.append((msg['message'], msg['timestamp']))
 
         contact_messages = self.profile.get_messages_new()
         for msg_dict in contact_messages:
             for rec, msg_list in msg_dict.items():
                 if rec == recipient:
                     for _msg in msg_list:
-                        all_messages.append((_msg, self.profile.get_message_timestamp(_msg)))
+                        all_messages.append((_msg['message'], _msg['timestamp']))
 
         # Sort messages based on timestamp
         all_messages.sort(key=lambda x: x[1])
 
         for message, timestamp in all_messages:
             if recipient == self.username:
-                self.body.insert_user_message(message, timestamp)
+                self.body.insert_user_message(message)
             else:
-                self.body.insert_contact_message(message, timestamp)
+                self.body.insert_contact_message(message)
 
     def send_message(self):
         message = self.body.get_text_entry()
