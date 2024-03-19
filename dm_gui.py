@@ -170,8 +170,8 @@ class MainApp(tk.Frame):
                 self.username = self.profile.username
                 self.password = self.profile.password
                 self.server = self.profile.dsuserver
-                # self._messages_all = self.profile._messages_all
-                # self._messages_new = self.profile._messages_new
+                self._messages_all = self.profile._messages_all
+                self._messages_new = self.profile._messages_new
                 self.direct_messenger = DirectMessenger(self.server,
                                                         self.username,
                                                         self.password)
@@ -207,19 +207,30 @@ class MainApp(tk.Frame):
         self.body.entry_editor.delete(1.0, tk.END) 
         self.body.entry_editor.configure(state='disabled')
 
+        all_messages = []
+
         user_messages = self.profile.get_messages_all()
         for message_dict in user_messages:
             for msg_recipient, message_list in message_dict.items():
                 if msg_recipient == recipient:
                     for msg in message_list:
-                        self.body.insert_user_message(msg)
+                        all_messages.append((msg, self.profile.get_message_timestamp(msg)))
 
         contact_messages = self.profile.get_messages_new()
         for msg_dict in contact_messages:
             for rec, msg_list in msg_dict.items():
                 if rec == recipient:
                     for _msg in msg_list:
-                        self.body.insert_contact_message(_msg)
+                        all_messages.append((_msg, self.profile.get_message_timestamp(_msg)))
+
+        # Sort messages based on timestamp
+        all_messages.sort(key=lambda x: x[1])
+
+        for message, timestamp in all_messages:
+            if recipient == self.username:
+                self.body.insert_user_message(message, timestamp)
+            else:
+                self.body.insert_contact_message(message, timestamp)
 
     def send_message(self):
         message = self.body.get_text_entry()

@@ -154,6 +154,18 @@ class Profile:
     def get_friends(self):
         return self.friends
 
+    def get_message_timestamp(self, message: str) -> float:
+        """
+        Retrieve the timestamp of a message.
+        """
+        for message_dict in self._messages_all:
+            for msg_recipient, message_list in message_dict.items():
+                if message in message_list:
+                    for msg in message_list:
+                        if msg == message:
+                            return msg.get('timestamp', 0)
+        return 0
+
     """
 
     add_post accepts a Post object as parameter and appends
