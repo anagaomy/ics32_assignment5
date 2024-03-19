@@ -119,6 +119,8 @@ class Profile:
             if recipient in msg_dict:
                 msg_dict[recipient].append(message)
                 break
+            else:
+                self._messages_new.append({recipient: [message]})
         else:
             self._messages_new.append({recipient: [message]})
 
@@ -127,6 +129,8 @@ class Profile:
             if recipient in msg_dict:
                 msg_dict[recipient].append(message)
                 break
+            else:
+                self._messages_all.append({recipient: [message]})
         else:
             self._messages_all.append({recipient: [message]})
     
@@ -142,7 +146,10 @@ class Profile:
         return self._messages_all
     
     def add_friends(self, username):
-        self.friends.append(username)
+        if username not in self.friends:
+            self.friends.append(username)
+        else:
+            self.friends = self.friends
     
     def get_friends(self):
         return self.friends
@@ -218,7 +225,7 @@ class Profile:
                     "Error while attempting to process the DSU file.", ex)
         else:
             Path(path).touch()
-            self.save_profile(self, path)
+            self.save_profile(path)
             # raise DsuFileError("Invalid DSU file path or type")
 
     """

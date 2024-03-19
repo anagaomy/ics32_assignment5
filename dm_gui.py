@@ -143,7 +143,7 @@ class NewContactDialog(tk.simpledialog.Dialog):
 
 
 class MainApp(tk.Frame):
-    def __init__(self, root, username=None, password=None, server=None):
+    def __init__(self, root, username=None, password=None, server=None, profile_file=None):
         tk.Frame.__init__(self, root)
         self.root = root
         self.username = username
@@ -154,16 +154,17 @@ class MainApp(tk.Frame):
         self.direct_messenger = None
         self._messages_new = None
         self._messages_all = None
+        self.profile_file = profile_file
 
         self._draw()
         self.load_profile()
+        self.check_new()
 
     def load_profile(self):
-        profile_file = "profile.dsu"
-        if Path(profile_file).is_file():
+        if Path(self.profile_file).is_file():
             try:
                 self.profile = Profile()
-                self.profile.load_profile(profile_file)
+                self.profile.load_profile(self.profile_file)
                 self.username = self.profile.username
                 self.password = self.profile.password
                 self.server = self.profile.dsuserver
@@ -204,18 +205,19 @@ class MainApp(tk.Frame):
         self.body.entry_editor.delete(1.0, tk.END) 
         self.body.entry_editor.configure(state='disabled')
 
-        # messages = self.direct_messenger.retrieve_all()  # Retrieve all messages
-        # for message in messages:
-        #     sender, msg = message.recipient, message.message
-        #     self.profile.push_socMessage(sender, msg)
-        #     self.save_profile()
-        #     self.profile
-        messages = self.profile.get_messages_all()
-        for message_dict in messages:
+        # user_messages = self.profile.get_messages_all()
+        for message_dict in self._messages_all:
             for msg_recipient, msg_list in message_dict.items():
                 if msg_recipient == recipient:
                     for msg in msg_list:
                         self.body.insert_user_message(msg)
+
+        # contact_messages = self.profile.get_messages_new()
+        for msg_dict in self._messages_new:
+            for rec, msg_list in msg_dict.items():
+                if rec == recipient:
+                    for msg in msg_list:
+                        self.body.insert_contact_message(msg)
 
     def send_message(self):
         message = self.body.get_text_entry()
@@ -228,7 +230,7 @@ class MainApp(tk.Frame):
                 if self.direct_messenger.send(message, self.recipient):
                     self.footer.footer_label.configure(text="Sent Direct Message.")
                     self.body.insert_user_message(message)
-                    self.profile.push_socMessage(self.recipient, message)
+                    self.profile.push_socMessage(recipient=self.recipient, message=message)
                     self.save_profile()
                 else:
                     self.footer.footer_label.configure(text="ERROR! Cannot process request.")
@@ -249,9 +251,6 @@ class MainApp(tk.Frame):
             else:
                 self.footer.footer_label.configure(text="ERROR! Contact already exists!")
 
-    def recipient_selected(self, rec):
-        self.recipient = rec
-
     def configure_server(self):
         ud = NewContactDialog(self.root, "Configure Account",
                               self.username, self.password, self.server)
@@ -262,15 +261,16 @@ class MainApp(tk.Frame):
                                               self.username,
                                               self.password)
 
-    def publish(self, message:str):
-        pass
-
     def check_new(self):
         if self.direct_messenger is not None:
             messages = self.direct_messenger.retrieve_new()
             for dm in messages:
-                self.body.insert_contact_message(dm.message)
+                # self.body.insert_contact_message(dm.message)
                 self.profile.add_message(dm.recipient, dm.message)
+                # self.body.insert_contact(dm.recipient)
+                self.profile.add_friends(dm.recipient)
+                self.save_profile()
+            self.after(2000, self.check_new)
         else:
             print("Error: DirectMessenger not properly initialized.")
 
@@ -299,6 +299,10 @@ class MainApp(tk.Frame):
 
 
 if __name__ == "__main__":
+    file = input("Which dsu profile do you want to load? \n") # "profile.dsu"
+    file = file.replace("'", "")
+    file = file.replace('"', '')
+
     main = tk.Tk()
 
     main.title("ICS 32 Distributed Social Messenger")
@@ -308,7 +312,7 @@ if __name__ == "__main__":
 
     main.option_add('*tearOff', False)
 
-    app = MainApp(main) # '168.235.86.101'
+    app = MainApp(main, profile_file=file) # '168.235.86.101'
 
     main.update()
     main.minsize(main.winfo_width(), main.winfo_height())

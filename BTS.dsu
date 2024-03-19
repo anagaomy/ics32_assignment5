@@ -1,12 +1,13 @@
 {
     "dsuserver": "168.235.86.101",
-    "username": "BLACKPINK",
-    "password": "2016",
+    "username": "BTS",
+    "password": "123",
     "bio": "BLACKPINK in your area!",
     "_posts": [],
     "friends": [
         "BTS",
-        "IVE"
+        "IVE", 
+        "BLACKPINK"
     ],
     "_messages_all": [
         {
