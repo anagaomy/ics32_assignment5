@@ -115,24 +115,23 @@ class Profile:
         self._messages_new = msg_new if msg_new is not None else []
 
     def add_message(self, message, recipient):
+        """
+        Add a new message to the profile's messages.
+        """
         for msg_dict in self._messages_new:
             if recipient in msg_dict:
-                msg_dict[recipient].append(message)
+                msg_dict[recipient].append({"message": message.message, "timestamp": message.timestamp})
                 break
-            else:
-                self._messages_new.append({recipient: [message]})
         else:
-            self._messages_new.append({recipient: [message]})
+            self._messages_new.append({recipient: [{"message": message.message, "timestamp": message.timestamp}]})
 
     def push_socMessage(self, recipient, message):
         for msg_dict in self._messages_all:
             if recipient in msg_dict:
-                msg_dict[recipient].append(message)
+                msg_dict[recipient].append({"message": message, "timestamp": time.time()})
                 break
-            else:
-                self._messages_all.append({recipient: [message]})
         else:
-            self._messages_all.append({recipient: [message]})
+            self._messages_all.append({recipient: [{"message": message, "timestamp": time.time()}]})
     
     def pop_newMessage(self):
         rec, msg = self._messages_new.pop(-1)
@@ -154,7 +153,7 @@ class Profile:
     def get_friends(self):
         return self.friends
 
-    def get_message_timestamp(self, message: str) -> float:
+    def get_all_message_time(self, message: str) -> float:
         """
         Retrieve the timestamp of a message.
         """

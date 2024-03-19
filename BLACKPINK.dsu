@@ -13,41 +13,41 @@
     "_messages_all": [
         {
             "BTS": [
-                "BUTTER",
-                "FIRE",
-                "V",
-                "Jin"
+                {"message": "BUTTER", "timestamp": 1603167689.3928561},
+                {"message": "FIRE", "timestamp": 1603167699.3928561},
+                {"message": "V", "timestamp": 1603167709.3928561},
+                {"message": "Jin", "timestamp": 1603167719.3928561}
             ]
         },
         {
             "IVE": [
-                "BADDIE"
+                {"message": "BADDIE", "timestamp": 1603167729.3928561}
             ]
         },
         {
             "NewJeans": [
-                "SUPER SHY",
-                "DITTO"
+                {"message": "SUPER SHY", "timestamp": 1603167739.3928561},
+                {"message": "DITTO", "timestamp": 1603167749.3928561}
             ]
         },
         {
             "BLACKPINK": [
-                "KILL THIS LOVE",
-                "PINK VENOM",
-                "STAY"
+                {"message": "KILL THIS LOVE", "timestamp": 1603167759.3928561},
+                {"message": "PINK VENOM", "timestamp": 1603167769.3928561},
+                {"message": "STAY", "timestamp": 1603167779.3928561}
             ]
         }
     ],
     "_messages_new": [
         {
             "BTS": [
-                "PLAY WITH FIRE",
-                "HOW YOU LIKE THAT"
+                {"message": "PLAY WITH FIRE", "timestamp": 1603167789.3928561},
+                {"message": "HOW YOU LIKE THAT", "timestamp": 1603167799.3928561}
             ]
         },
         {
             "BLACKPINK": [
-                "STAY"
+                {"message": "STAY", "timestamp": 1603167809.3928561}
             ]
         }
     ]

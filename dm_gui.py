@@ -214,7 +214,7 @@ class MainApp(tk.Frame):
             for msg_recipient, message_list in message_dict.items():
                 if msg_recipient == recipient:
                     for msg in message_list:
-                        all_messages.append((msg, self.profile.get_message_timestamp(msg)))
+                        all_messages.append((msg, self.profile.get_all_message_time(msg)))
 
         contact_messages = self.profile.get_messages_new()
         for msg_dict in contact_messages:
@@ -275,18 +275,23 @@ class MainApp(tk.Frame):
                                               self.password)
 
     def check_new(self):
-        if self.direct_messenger is not None:
-            messages = self.direct_messenger.retrieve_new()
-            for dm in messages:
-                # self.body.insert_contact_message(dm.message)
-                self.profile.add_message(dm.message, dm.recipient)
-                if dm.recipient not in self.profile.get_friends():
-                    self.body.insert_contact(dm.recipient)
-                    self.profile.add_friends(dm.recipient)
-                self.save_profile()
-            self.after(2000, self.check_new)
-        else:
-            print("Error: DirectMessenger not properly initialized.")
+        """
+        Check for new messages periodically and add them to the profile.
+        """
+        try:
+            if self.direct_messenger is not None:
+                messages = self.direct_messenger.retrieve_new()
+                for dm in messages:
+                    self.profile.add_message(dm, dm.recipient)
+                    if dm.recipient not in self.profile.get_friends():
+                        self.body.insert_contact(dm.recipient)
+                        self.profile.add_friends(dm.recipient)
+                    self.save_profile()
+                self.after(2000, self.check_new)
+            else:
+                print("Error: DirectMessenger not properly initialized.")
+        except Exception as e:
+            print("Error:", e)
 
     def _draw(self):
         menu_bar = tk.Menu(self.root)
