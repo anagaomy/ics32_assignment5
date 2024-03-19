@@ -6,7 +6,7 @@
     "_posts": [],
     "friends": [
         "BTS",
-        "IVE", 
+        "IVE",
         "BLACKPINK"
     ],
     "_messages_all": [
@@ -22,7 +22,19 @@
                 "baddie",
                 "mine"
             ]
+        },
+        {
+            "BLACKPINK": [
+                "PLAY WITH FIRE",
+                "HOW YOU LIKE THAT"
+            ]
         }
     ],
-    "_messages_new": []
+    "_messages_new": [
+        {
+            "BLACKPINK": [
+                "Jin"
+            ]
+        }
+    ]
 }

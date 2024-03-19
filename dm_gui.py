@@ -42,7 +42,9 @@ class Body(tk.Frame):
         self.entry_editor.configure(state='disabled')
 
     def insert_contact_message(self, message:str):
+        self.entry_editor.configure(state='normal')
         self.entry_editor.insert(1.0, message + '\n', 'entry-left')
+        self.entry_editor.configure(state='disabled')
 
     def get_text_entry(self) -> str:
         return self.message_editor.get('1.0', 'end').rstrip()
@@ -168,8 +170,8 @@ class MainApp(tk.Frame):
                 self.username = self.profile.username
                 self.password = self.profile.password
                 self.server = self.profile.dsuserver
-                self._messages_all = self.profile._messages_all
-                self._messages_new = self.profile._messages_new
+                # self._messages_all = self.profile._messages_all
+                # self._messages_new = self.profile._messages_new
                 self.direct_messenger = DirectMessenger(self.server,
                                                         self.username,
                                                         self.password)
@@ -188,7 +190,7 @@ class MainApp(tk.Frame):
 
     def save_profile(self):
         try:
-            self.profile.save_profile("profile.dsu")
+            self.profile.save_profile(self.profile_file)
         except DsuFileError as e:
             print(f"Error saving profile: {e}")
 
@@ -205,19 +207,19 @@ class MainApp(tk.Frame):
         self.body.entry_editor.delete(1.0, tk.END) 
         self.body.entry_editor.configure(state='disabled')
 
-        # user_messages = self.profile.get_messages_all()
-        for message_dict in self._messages_all:
-            for msg_recipient, msg_list in message_dict.items():
+        user_messages = self.profile.get_messages_all()
+        for message_dict in user_messages:
+            for msg_recipient, message_list in message_dict.items():
                 if msg_recipient == recipient:
-                    for msg in msg_list:
+                    for msg in message_list:
                         self.body.insert_user_message(msg)
 
-        # contact_messages = self.profile.get_messages_new()
-        for msg_dict in self._messages_new:
+        contact_messages = self.profile.get_messages_new()
+        for msg_dict in contact_messages:
             for rec, msg_list in msg_dict.items():
                 if rec == recipient:
-                    for msg in msg_list:
-                        self.body.insert_contact_message(msg)
+                    for _msg in msg_list:
+                        self.body.insert_contact_message(_msg)
 
     def send_message(self):
         message = self.body.get_text_entry()
@@ -230,7 +232,7 @@ class MainApp(tk.Frame):
                 if self.direct_messenger.send(message, self.recipient):
                     self.footer.footer_label.configure(text="Sent Direct Message.")
                     self.body.insert_user_message(message)
-                    self.profile.push_socMessage(recipient=self.recipient, message=message)
+                    self.profile.push_socMessage(self.recipient, message)
                     self.save_profile()
                 else:
                     self.footer.footer_label.configure(text="ERROR! Cannot process request.")
@@ -266,9 +268,10 @@ class MainApp(tk.Frame):
             messages = self.direct_messenger.retrieve_new()
             for dm in messages:
                 # self.body.insert_contact_message(dm.message)
-                self.profile.add_message(dm.recipient, dm.message)
-                # self.body.insert_contact(dm.recipient)
-                self.profile.add_friends(dm.recipient)
+                self.profile.add_message(dm.message, dm.recipient)
+                if dm.recipient not in self.profile.get_friends():
+                    self.body.insert_contact(dm.recipient)
+                    self.profile.add_friends(dm.recipient)
                 self.save_profile()
             self.after(2000, self.check_new)
         else:

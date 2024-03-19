@@ -14,7 +14,9 @@
         {
             "BTS": [
                 "BUTTER",
-                "FIRE"
+                "FIRE",
+                "V",
+                "Jin"
             ]
         },
         {
@@ -31,9 +33,22 @@
         {
             "BLACKPINK": [
                 "KILL THIS LOVE",
-                "PINK VENOM"
+                "PINK VENOM",
+                "STAY"
             ]
         }
     ],
-    "_messages_new": []
+    "_messages_new": [
+        {
+            "BTS": [
+                "PLAY WITH FIRE",
+                "HOW YOU LIKE THAT"
+            ]
+        },
+        {
+            "BLACKPINK": [
+                "STAY"
+            ]
+        }
+    ]
 }
