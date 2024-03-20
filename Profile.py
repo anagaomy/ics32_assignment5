@@ -102,8 +102,9 @@ class Profile:
 
     """
 
-    def __init__(self, dsuserver=None, username=None, password=None,
-                 friends: list=None, msg_all: list=None, msg_new: list=None):
+    def __init__(self, dsuserver=None, username=None,
+                 password=None, friends: list = None,
+                 msg_all: list = None, msg_new: list = None):
         self.dsuserver = dsuserver  # REQUIRED
         self.username = username  # REQUIRED
         self.password = password  # REQUIRED
@@ -120,36 +121,42 @@ class Profile:
         """
         for msg_dict in self._messages_new:
             if recipient in msg_dict:
-                msg_dict[recipient].append({"message": message.message, "timestamp": message.timestamp})
+                msg_dict[recipient].append({"message": message.message,
+                                            "timestamp": message.timestamp})
                 break
         else:
-            self._messages_new.append({recipient: [{"message": message.message, "timestamp": message.timestamp}]})
+            msg = message.message
+            msg_time = message.timestamp
+            self._messages_new.append({recipient: [{"message": msg,
+                                                    "timestamp": msg_time}]})
 
-    def push_socMessage(self, recipient, message):
+    def push_socMessage(self, rec, message):
         for msg_dict in self._messages_all:
-            if recipient in msg_dict:
-                msg_dict[recipient].append({"message": message, "timestamp": time.time()})
+            if rec in msg_dict:
+                msg_dict[rec].append({"message": message,
+                                      "timestamp": time.time()})
                 break
         else:
-            self._messages_all.append({recipient: [{"message": message, "timestamp": time.time()}]})
-    
+            self._messages_all.append({rec: [{"message": message,
+                                              "timestamp": time.time()}]})
+
     def pop_newMessage(self):
         rec, msg = self._messages_new.pop(-1)
         self._messages_all.append((rec, msg))
         return (rec, msg)
-    
+
     def get_messages_new(self):
         return self._messages_new
-    
+
     def get_messages_all(self):
         return self._messages_all
-    
+
     def add_friends(self, username):
         if username not in self.friends:
             self.friends.append(username)
         else:
             self.friends = self.friends
-    
+
     def get_friends(self):
         return self.friends
 

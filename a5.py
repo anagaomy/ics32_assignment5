@@ -146,7 +146,7 @@ class NewContactDialog(tk.simpledialog.Dialog):
 
 
 class MainApp(tk.Frame):
-    def __init__(self, root, username=None, password=None, server=None, profile_file="BLACKPINK.dsu"):
+    def __init__(self, root, username=None, password=None, server=None, profile_file=None):
         tk.Frame.__init__(self, root)
         self.root = root
         self.username = username
@@ -164,6 +164,12 @@ class MainApp(tk.Frame):
         self.check_new()
 
     def load_profile(self):
+        file = input("Which dsu profile do you want to load? \n") # "BLACKPINK.dsu"
+        file = file.replace("'", "")
+        file = file.replace('"', '')
+        if file == '':
+            file = 'BLACKPINK.dsu'
+        self.profile_file = file
         if Path(self.profile_file).is_file():
             try:
                 self.profile = Profile()
@@ -319,28 +325,18 @@ class MainApp(tk.Frame):
 
 
 def main():
-    file = input("Which dsu profile do you want to load? \n") # "BLACKPINK.dsu"
-    file = file.replace("'", "")
-    file = file.replace('"', '')
-
     main = tk.Tk()
-
     main.title("ICS 32 Distributed Social Messenger")
-
     main.geometry("720x480")
     main.configure(background='pink')
-
     main.option_add('*tearOff', False)
 
-    if file == '':
-        app = MainApp(main)
-    else:
-        app = MainApp(main, profile_file=file)
-
+    app = MainApp(main)
     main.update()
     main.minsize(main.winfo_width(), main.winfo_height())
     id = main.after(2000, app.check_new)
     print(id)
+
     main.mainloop()
 
 
