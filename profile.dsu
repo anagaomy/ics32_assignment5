@@ -1,0 +1,21 @@
+{
+    "dsuserver": "168.235.86.101",
+    "username": "hiihihi",
+    "password": "123",
+    "bio": "",
+    "_posts": [],
+    "friends": [
+        "someone"
+    ],
+    "_messages_all": [
+        {
+            "someone": [
+                {
+                    "message": "hi",
+                    "timestamp": 1710925486.065001
+                }
+            ]
+        }
+    ],
+    "_messages_new": []
+}

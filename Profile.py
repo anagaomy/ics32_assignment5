@@ -51,8 +51,6 @@ class Post(dict):
         self._timestamp = timestamp
         self.set_entry(entry)
 
-        # Subclass dict to expose Post properties for serialization
-        # Don't worry about this!
         dict.__init__(self, entry=self._entry, timestamp=self._timestamp)
 
     def set_entry(self, entry):
@@ -119,6 +117,7 @@ class Profile:
         """
         Add a new message to the profile's messages.
         """
+
         for msg_dict in self._messages_new:
             if recipient in msg_dict:
                 msg_dict[recipient].append({"message": message.message,
@@ -131,6 +130,10 @@ class Profile:
                                                     "timestamp": msg_time}]})
 
     def push_socMessage(self, rec, message):
+        """
+        Push a new message to the profile's all messages.
+        """
+
         for msg_dict in self._messages_all:
             if rec in msg_dict:
                 msg_dict[rec].append({"message": message,
@@ -141,29 +144,49 @@ class Profile:
                                               "timestamp": time.time()}]})
 
     def pop_newMessage(self):
+        """
+        Pop the newest message from new messages.
+        """
+
         rec, msg = self._messages_new.pop(-1)
         self._messages_all.append((rec, msg))
         return (rec, msg)
 
     def get_messages_new(self):
+        """
+        Get all new messages.
+        """
+
         return self._messages_new
 
     def get_messages_all(self):
+        """
+        Get all messages.
+        """
         return self._messages_all
 
     def add_friends(self, username):
+        """
+        Add a friend to a contact list if the friend is not in it.
+        """
+
         if username not in self.friends:
             self.friends.append(username)
         else:
             self.friends = self.friends
 
     def get_friends(self):
+        """
+        Get friends list.
+        """
+
         return self.friends
 
-    def get_all_message_time(self, message: str) -> float:
+    def get_all_message_time(self, message: str):
         """
         Retrieve the timestamp of a message.
         """
+
         for message_dict in self._messages_all:
             for msg_recipient, message_list in message_dict.items():
                 if message in message_list:
@@ -172,10 +195,11 @@ class Profile:
                             return msg['timestamp']
         return 0
 
-    def get_new_message_time(self, message: str) -> float:
+    def get_new_message_time(self, message: str):
         """
         Retrieve the timestamp of a message.
         """
+
         for message_dict in self._messages_new:
             for msg_recipient, message_list in message_dict.items():
                 if message in message_list:
