@@ -64,6 +64,10 @@
                 {
                     "message": "STAY",
                     "timestamp": 1603167779.3928561
+                },
+                {
+                    "message": "SHUT DOWN",
+                    "timestamp": 1710977680.8653178
                 }
             ]
         }

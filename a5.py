@@ -61,14 +61,17 @@ class Body(tk.Frame):
         self.entry_editor.configure(state='normal')
         self.entry_editor.insert(tk.END, message + '\n', 'entry-right')
         self.entry_editor.configure(state='disabled')
+        self.entry_editor.see(tk.END)
 
     def insert_contact_message(self, message: str):
         """
         Insert a contact message into the entry editor.
         """
         self.entry_editor.configure(state='normal')
-        self.entry_editor.insert(1.0, message + '\n', 'entry-left')
+        # self.entry_editor.insert(1.0, message + '\n', 'entry-left')
+        self.entry_editor.insert(tk.END, message + '\n', 'entry-left')
         self.entry_editor.configure(state='disabled')
+        self.entry_editor.see(tk.END)
 
     def get_text_entry(self) -> str:
         """
@@ -87,7 +90,7 @@ class Body(tk.Frame):
         """
         Draw the main body components.
         """
-        posts_frame = tk.Frame(master=self, width=250)
+        posts_frame = tk.Frame(master=self, width=250, bg='pink')
         posts_frame.pack(fill=tk.BOTH, side=tk.LEFT)
 
         self.posts_tree = ttk.Treeview(posts_frame)
@@ -112,8 +115,8 @@ class Body(tk.Frame):
                                  expand=True, padx=0, pady=0)
 
         self.entry_editor = tk.Text(editor_frame, width=0, height=5)
-        self.entry_editor.tag_configure('entry-right', justify='right')
-        self.entry_editor.tag_configure('entry-left', justify='left')
+        self.entry_editor.tag_configure('entry-right', justify='right', background='pink', )
+        self.entry_editor.tag_configure('entry-left', justify='left', background='#F5F5F5')
         self.entry_editor.pack(fill=tk.BOTH, side=tk.LEFT,
                                expand=True, padx=0, pady=0)
 
@@ -161,7 +164,6 @@ class NewContactDialog(tk.simpledialog.Dialog):
 
     def __init__(self, root, title=None, user=None,
                  pwd=None, server='168.235.86.101'):
-        # self.root = root
         self.server = server
         self.user = user
         self.pwd = pwd
@@ -215,24 +217,66 @@ class MainApp(tk.Frame):
         self.profile_file = profile_file
 
         self._draw()
+        # self.check_new()
+    
+    def open_profile(self):
+        """
+        Open user profile with profile name.
+        """
+        profile_name = simpledialog.askstring("Open Profile:",
+                                              "Enter your profile name.",
+                                              parent=self.body)
+        if Path(profile_name).is_file() and Path(profile_name).exists:
+            self.profile_file = profile_name
+            self.load_profile()
+            self.save_profile()
+            print("Profile opened successfully!")
+        else:
+            if profile_name is None:
+                self.footer.footer_label.configure(
+                    text="Cancelled by user.")
+            else:
+                self.footer.footer_label.configure(
+                    text="ERROR! Profile does not exist!")
+    
+    def new_profile(self):
+        """
+        Create a new user profile if it does not exist.
+        """
+        new_file_name = simpledialog.askstring("New Profile:",
+                                                  "Enter your profile name.",
+                                                  parent=self.body)
+        username = simpledialog.askstring("Username:",
+                                          "Enter your username.",
+                                          parent=self.body)
+        password = simpledialog.askstring("Password:",
+                                          "Enter your password.",
+                                          parent=self.body)
+        self.username = username
+        self.password = password
+        self.profile = Profile(self.server, self.username, self.password)
+        if Path(new_file_name).exists() and new_file_name.endswith('.dsu'):
+            self.profile_file = new_file_name
+            self.load_profile()
+        else:
+            if new_file_name is None:
+                self.footer.footer_label.configure(
+                    text="Cancelled by user.")
+            else:
+                new_file_name = new_file_name + '.dsu'
+                self.profile_file = new_file_name
+        self.save_profile()
         self.load_profile()
-        self.check_new()
+        print("Profile created successfully!")
+
+    def close_profile(self):
+        self.direct_messenger = DirectMessenger()
+        self.direct_messenger.close_connection()
 
     def load_profile(self):
         """
         Load user profile from the profile file.
         """
-        file = input("Which dsu profile do you want to load? \n")
-        file = file.replace("'", "")
-        file = file.replace('"', '')
-        self.profile_file = file
-        if not Path(self.profile_file).is_file():
-            self.username = str(input("Enter your username (no whitespace): "))
-            self.password = str(input("Enter your password (no whitespace): "))
-            self.server = str(input("Enter the dsu server: "))
-            self.profile = Profile(self.server, self.username, self.password)
-            self.profile_file = self.username + '.dsu'
-            self.save_profile()
         try:
             self.profile = Profile()
             self.profile.load_profile(self.profile_file)
@@ -297,13 +341,18 @@ class MainApp(tk.Frame):
                                              _msg['timestamp']))
 
         # Sort messages based on timestamp
-        all_messages.sort(key=lambda x: x[3], reverse=True)
+        all_messages.sort(key=lambda x: x[2])
+        self.body.entry_editor.configure(state='normal')
+        self.body.entry_editor.delete(1.0, tk.END)
 
         for _type, _, message, _ in all_messages:
             if _type == "sent":
-                self.body.insert_user_message(message)
+                self.body.entry_editor.insert(tk.END, message + '\n', 'entry-right')
             elif _type == "new":
-                self.body.insert_contact_message(message)
+                self.body.entry_editor.insert(tk.END, message + '\n', 'entry-left')
+
+        self.body.entry_editor.configure(state='disabled')
+        self.body.entry_editor.see(tk.END)
 
     def send_message(self):
         """
@@ -388,9 +437,9 @@ class MainApp(tk.Frame):
         menu_file = tk.Menu(menu_bar)
 
         menu_bar.add_cascade(menu=menu_file, label='File')
-        menu_file.add_command(label='New')
-        menu_file.add_command(label='Open...')
-        menu_file.add_command(label='Close')
+        menu_file.add_command(label='New', command=self.new_profile)
+        menu_file.add_command(label='Open...', command=self.open_profile)
+        menu_file.add_command(label='Close', command=self.close_profile)
 
         settings_file = tk.Menu(menu_bar)
         menu_bar.add_cascade(menu=settings_file, label='Settings')

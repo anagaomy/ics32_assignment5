@@ -56,6 +56,7 @@ class DirectMessenger:
     def close_connection(self):
         if self.client:
             self.client.close()
+            print("Connection disconnected!")
 
     def send(self, message: str, recipient: str) -> bool:
         """
