@@ -110,15 +110,15 @@ class Profile:
         self._posts = []          # OPTIONAL
 
         self.friends = friends if friends is not None else []
-        self._messages_all = msg_all if msg_all is not None else []
-        self._messages_new = msg_new if msg_new is not None else []
+        self.messages_all = msg_all if msg_all is not None else []
+        self.messages_new = msg_new if msg_new is not None else []
 
     def add_message(self, message, recipient):
         """
         Add a new message to the profile's messages.
         """
 
-        for msg_dict in self._messages_new:
+        for msg_dict in self.messages_new:
             if recipient in msg_dict:
                 msg_dict[recipient].append({"message": message.message,
                                             "timestamp": message.timestamp})
@@ -126,7 +126,7 @@ class Profile:
         else:
             msg = message.message
             msg_time = message.timestamp
-            self._messages_new.append({recipient: [{"message": msg,
+            self.messages_new.append({recipient: [{"message": msg,
                                                     "timestamp": msg_time}]})
 
     def push_socMessage(self, rec, message):
@@ -134,13 +134,13 @@ class Profile:
         Push a new message to the profile's all messages.
         """
 
-        for msg_dict in self._messages_all:
+        for msg_dict in self.messages_all:
             if rec in msg_dict:
                 msg_dict[rec].append({"message": message,
                                       "timestamp": time.time()})
                 break
         else:
-            self._messages_all.append({rec: [{"message": message,
+            self.messages_all.append({rec: [{"message": message,
                                               "timestamp": time.time()}]})
 
     def pop_newMessage(self):
@@ -148,8 +148,8 @@ class Profile:
         Pop the newest message from new messages.
         """
 
-        rec, msg = self._messages_new.pop(-1)
-        self._messages_all.append((rec, msg))
+        rec, msg = self.messages_new.pop(-1)
+        self.messages_all.append((rec, msg))
         return (rec, msg)
 
     def get_messages_new(self):
@@ -157,13 +157,13 @@ class Profile:
         Get all new messages.
         """
 
-        return self._messages_new
+        return self.messages_new
 
     def get_messages_all(self):
         """
         Get all messages.
         """
-        return self._messages_all
+        return self.messages_all
 
     def add_friends(self, username):
         """
@@ -187,7 +187,7 @@ class Profile:
         Retrieve the timestamp of a message.
         """
 
-        for message_dict in self._messages_all:
+        for message_dict in self.messages_all:
             for msg_recipient, message_list in message_dict.items():
                 if message in message_list:
                     for msg in message_list:
@@ -200,7 +200,7 @@ class Profile:
         Retrieve the timestamp of a message.
         """
 
-        for message_dict in self._messages_new:
+        for message_dict in self.messages_new:
             for msg_recipient, message_list in message_dict.items():
                 if message in message_list:
                     for msg in message_list:
@@ -307,9 +307,9 @@ class Profile:
                 self.password = obj['password']
                 self.dsuserver = obj['dsuserver']
                 self.bio = obj['bio']
-                self.friends = obj.get('friends', [])
-                self._messages_all = obj.get('_messages_all', [])
-                self._messages_new = obj.get('_messages_new', [])
+                self.friends = obj['friends']
+                self.messages_all = obj['messages_all']
+                self.messages_new = obj['messages_new']
                 posts = obj['_posts']
                 for post_obj in posts:
                     post = Post(post_obj['entry'], post_obj['timestamp'])

@@ -3,12 +3,16 @@
 # 26384258
 
 
+"""
+Distributed Social Messenger Application
+This script implements a GUI application for a distributed social messenger.
+"""
+
 from pathlib import Path
 import tkinter as tk
 from tkinter import simpledialog
 from tkinter import ttk
 from ds_messenger import DirectMessenger
-from ds_messenger import DirectMessage
 from Profile import Profile, DsuProfileError, DsuFileError
 
 
@@ -155,32 +159,33 @@ class NewContactDialog(tk.simpledialog.Dialog):
     Dialog window for adding a new contact.
     """
 
-    def __init__(self, root, title=None, user=None, pwd=None, server='168.235.86.101'):
-        self.root = root
+    def __init__(self, root, title=None, user=None,
+                 pwd=None, server='168.235.86.101'):
+        # self.root = root
         self.server = server
         self.user = user
         self.pwd = pwd
         super().__init__(root, title)
 
-    def body(self, frame):
+    def body(self, master):
         """
         Create dialog body.
         """
-        self.server_label = tk.Label(frame, width=30, text="DS Server Address")
-        self.server_label.pack()
-        self.server_entry = tk.Entry(frame, width=30)
+        server_label = tk.Label(master, width=30, text="DS Server Address")
+        server_label.pack()
+        self.server_entry = tk.Entry(master, width=30)
         self.server_entry.insert(tk.END, self.server)
         self.server_entry.pack()
 
-        self.username_label = tk.Label(frame, width=30, text="Username")
-        self.username_label.pack()
-        self.username_entry = tk.Entry(frame, width=30)
+        username_label = tk.Label(master, width=30, text="Username")
+        username_label.pack()
+        self.username_entry = tk.Entry(master, width=30)
         self.username_entry.insert(tk.END, self.user)
         self.username_entry.pack()
 
-        self.password_label = tk.Label(frame, width=30, text="Password")
-        self.password_label.pack()
-        self.password_entry = tk.Entry(frame, width=30, show='*')
+        password_label = tk.Label(master, width=30, text="Password")
+        password_label.pack()
+        self.password_entry = tk.Entry(master, width=30, show='*')
         self.password_entry.insert(tk.END, self.pwd)
         self.password_entry.pack()
 
@@ -206,10 +211,7 @@ class MainApp(tk.Frame):
         self.password = None
         self.server = server
         self.recipient = None
-        self.node_selected = None
         self.direct_messenger = None
-        self._messages_new = None
-        self._messages_all = None
         self.profile_file = profile_file
 
         self._draw()
@@ -223,14 +225,13 @@ class MainApp(tk.Frame):
         file = input("Which dsu profile do you want to load? \n")
         file = file.replace("'", "")
         file = file.replace('"', '')
-        if file == '':
-            file = 'BLACKPINK.dsu'
         self.profile_file = file
         if not Path(self.profile_file).is_file():
-            self.username = input("Enter your username: ")
-            self.password = input("Enter your password: ")
-            self.server = input("Enter the dsu server: ")
+            self.username = str(input("Enter your username (no whitespace): "))
+            self.password = str(input("Enter your password (no whitespace): "))
+            self.server = str(input("Enter the dsu server: "))
             self.profile = Profile(self.server, self.username, self.password)
+            self.profile_file = self.username + '.dsu'
             self.save_profile()
         try:
             self.profile = Profile()
@@ -238,8 +239,6 @@ class MainApp(tk.Frame):
             self.username = self.profile.username
             self.password = self.profile.password
             self.server = self.profile.dsuserver
-            self._messages_all = self.profile._messages_all
-            self._messages_new = self.profile._messages_new
             self.direct_messenger = DirectMessenger(self.server,
                                                     self.username,
                                                     self.password)

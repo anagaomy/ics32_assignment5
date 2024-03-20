@@ -9,7 +9,7 @@
         "IVE",
         "BLACKPINK"
     ],
-    "_messages_all": [
+    "messages_all": [
         {
             "BLACKPINK": [
                 {
@@ -31,7 +31,7 @@
             ]
         }
     ],
-    "_messages_new": [
+    "messages_new": [
         {
             "BLACKPINK": [
                 {

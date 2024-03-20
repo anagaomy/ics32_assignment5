@@ -10,7 +10,7 @@
         "NewJeans",
         "BLACKPINK"
     ],
-    "_messages_all": [
+    "messages_all": [
         {
             "BTS": [
                 {
@@ -68,7 +68,7 @@
             ]
         }
     ],
-    "_messages_new": [
+    "messages_new": [
         {
             "BTS": [
                 {
