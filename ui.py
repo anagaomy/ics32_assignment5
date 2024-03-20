@@ -5,7 +5,7 @@
 # 26384258
 
 
-import a5 as cmd
+import file_cmd as cmd
 from pathlib import Path
 import Profile
 from Profile import Profile as profile

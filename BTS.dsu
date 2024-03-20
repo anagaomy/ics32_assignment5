@@ -2,7 +2,7 @@
     "dsuserver": "168.235.86.101",
     "username": "BTS",
     "password": "123",
-    "bio": "BLACKPINK in your area!",
+    "bio": "",
     "_posts": [],
     "friends": [
         "BTS",
@@ -11,29 +11,33 @@
     ],
     "_messages_all": [
         {
-            "BTS": [
-                "heyy",
-                "hiii bts",
-                "butter"
-            ]
-        },
-        {
-            "IVE": [
-                "baddie",
-                "mine"
-            ]
-        },
-        {
             "BLACKPINK": [
-                "PLAY WITH FIRE",
-                "HOW YOU LIKE THAT"
+                {
+                    "message": "PLAY WITH FIRE",
+                    "timestamp": 1603167789.3928561
+                },
+                {
+                    "message": "HOW YOU LIKE THAT",
+                    "timestamp": 1603167799.3928561
+                },
+                {
+                    "message": "ONLY ONE DAY",
+                    "timestamp": 1710898117.28966
+                },
+                {
+                    "message": "SOLO",
+                    "timestamp": 1710898446.996544
+                }
             ]
         }
     ],
     "_messages_new": [
         {
             "BLACKPINK": [
-                "Jin"
+                {
+                    "message": "Jin",
+                    "timestamp": 1603167719.3928561
+                }
             ]
         }
     ]
