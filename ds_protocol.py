@@ -94,7 +94,7 @@ def request_response(directMsg: str):
                 'timestamp': item['timestamp']
                 }
         response_dict = {
-            "type" : _type,
+            "type": _type,
             "messages": msg_dict
             }
         return response_dict

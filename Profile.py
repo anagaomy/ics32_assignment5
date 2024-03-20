@@ -127,7 +127,7 @@ class Profile:
             msg = message.message
             msg_time = message.timestamp
             self.messages_new.append({recipient: [{"message": msg,
-                                                    "timestamp": msg_time}]})
+                                                   "timestamp": msg_time}]})
 
     def push_socMessage(self, rec, message):
         """
@@ -141,7 +141,7 @@ class Profile:
                 break
         else:
             self.messages_all.append({rec: [{"message": message,
-                                              "timestamp": time.time()}]})
+                                             "timestamp": time.time()}]})
 
     def pop_newMessage(self):
         """
