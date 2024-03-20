@@ -146,7 +146,7 @@ class NewContactDialog(tk.simpledialog.Dialog):
 
 
 class MainApp(tk.Frame):
-    def __init__(self, root, username=None, password=None, server=None, profile_file=None):
+    def __init__(self, root, username=None, password=None, server=None, profile_file="BLACKPINK.dsu"):
         tk.Frame.__init__(self, root)
         self.root = root
         self.username = username
@@ -318,8 +318,8 @@ class MainApp(tk.Frame):
         self.footer.pack(fill=tk.BOTH, side=tk.BOTTOM)
 
 
-if __name__ == "__main__":
-    file = input("Which dsu profile do you want to load? \n") # "profile.dsu"
+def main():
+    file = input("Which dsu profile do you want to load? \n") # "BLACKPINK.dsu"
     file = file.replace("'", "")
     file = file.replace('"', '')
 
@@ -332,10 +332,17 @@ if __name__ == "__main__":
 
     main.option_add('*tearOff', False)
 
-    app = MainApp(main, profile_file=file) # '168.235.86.101'
+    if file == '':
+        app = MainApp(main)
+    else:
+        app = MainApp(main, profile_file=file)
 
     main.update()
     main.minsize(main.winfo_width(), main.winfo_height())
     id = main.after(2000, app.check_new)
     print(id)
     main.mainloop()
+
+
+if __name__ == "__main__":
+    main()
