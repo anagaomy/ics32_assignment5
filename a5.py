@@ -264,6 +264,8 @@ class MainApp(tk.Frame):
             if new_file_name is None:
                 self.footer.footer_label.configure(
                     text="Cancelled by user.")
+            elif new_file_name.endswith('dsu'):
+                self.profile_file = new_file_name
             else:
                 new_file_name = new_file_name + '.dsu'
                 self.profile_file = new_file_name
@@ -296,6 +298,7 @@ class MainApp(tk.Frame):
             friends = self.profile.get_friends()
             for friend in friends:
                 self.body.insert_contact(friend)
+            self.check_new()
         except (DsuProfileError, DsuFileError) as e:
             print(f"Error loading profile: {e}")
 

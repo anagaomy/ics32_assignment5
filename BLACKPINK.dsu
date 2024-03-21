@@ -8,7 +8,8 @@
         "BTS",
         "IVE",
         "NewJeans",
-        "BLACKPINK"
+        "BLACKPINK",
+        "Jennie"
     ],
     "messages_all": [
         {
@@ -92,8 +93,16 @@
         {
             "BLACKPINK": [
                 {
-                    "message": "STAY",
-                    "timestamp": 1603167809.3928561
+                    "message": "SHUT DOWN",
+                    "timestamp": 1710977680
+                }
+            ]
+        },
+        {
+            "Jennie": [
+                {
+                    "message": "SOOOOLLOOO",
+                    "timestamp": 1710983503
                 }
             ]
         }
