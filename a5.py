@@ -115,8 +115,12 @@ class Body(tk.Frame):
                                  expand=True, padx=0, pady=0)
 
         self.entry_editor = tk.Text(editor_frame, width=0, height=5)
-        self.entry_editor.tag_configure('entry-right', justify='right', background='pink', )
-        self.entry_editor.tag_configure('entry-left', justify='left', background='#F5F5F5')
+        self.entry_editor.tag_configure('entry-right',
+                                        justify='right',
+                                        background='pink', )
+        self.entry_editor.tag_configure('entry-left',
+                                        justify='left',
+                                        background='#F5F5F5')
         self.entry_editor.pack(fill=tk.BOTH, side=tk.LEFT,
                                expand=True, padx=0, pady=0)
 
@@ -214,11 +218,10 @@ class MainApp(tk.Frame):
         self.server = server
         self.recipient = None
         self.direct_messenger = None
+        self.profile = Profile()
         self.profile_file = profile_file
-
         self._draw()
-        # self.check_new()
-    
+
     def open_profile(self):
         """
         Open user profile with profile name.
@@ -238,14 +241,14 @@ class MainApp(tk.Frame):
             else:
                 self.footer.footer_label.configure(
                     text="ERROR! Profile does not exist!")
-    
+
     def new_profile(self):
         """
         Create a new user profile if it does not exist.
         """
         new_file_name = simpledialog.askstring("New Profile:",
-                                                  "Enter your profile name.",
-                                                  parent=self.body)
+                                               "Enter your profile name.",
+                                               parent=self.body)
         username = simpledialog.askstring("Username:",
                                           "Enter your username.",
                                           parent=self.body)
@@ -270,6 +273,9 @@ class MainApp(tk.Frame):
         print("Profile created successfully!")
 
     def close_profile(self):
+        """
+        diconnect connection to the dsu server.
+        """
         self.direct_messenger = DirectMessenger()
         self.direct_messenger.close_connection()
 
@@ -278,7 +284,7 @@ class MainApp(tk.Frame):
         Load user profile from the profile file.
         """
         try:
-            self.profile = Profile()
+            self.profile = Profile(self.server, self.username, self.password)
             self.profile.load_profile(self.profile_file)
             self.username = self.profile.username
             self.password = self.profile.password
@@ -347,9 +353,11 @@ class MainApp(tk.Frame):
 
         for _type, _, message, _ in all_messages:
             if _type == "sent":
-                self.body.entry_editor.insert(tk.END, message + '\n', 'entry-right')
+                self.body.entry_editor.insert(tk.END, message +
+                                              '\n', 'entry-right')
             elif _type == "new":
-                self.body.entry_editor.insert(tk.END, message + '\n', 'entry-left')
+                self.body.entry_editor.insert(tk.END, message +
+                                              '\n', 'entry-left')
 
         self.body.entry_editor.configure(state='disabled')
         self.body.entry_editor.see(tk.END)

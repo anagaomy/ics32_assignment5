@@ -16,8 +16,6 @@ def extract_json(json_msg: str) -> RESPONSE:
     '''
     Call the json.loads function on a json string
     and convert it to a DataTuple object
-
-    TODO: replace the pseudo placeholder keys with actual DSP protocol keys
     '''
     try:
         json_obj = json.loads(json_msg)
