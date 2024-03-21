@@ -68,7 +68,6 @@ class Body(tk.Frame):
         Insert a contact message into the entry editor.
         """
         self.entry_editor.configure(state='normal')
-        # self.entry_editor.insert(1.0, message + '\n', 'entry-left')
         self.entry_editor.insert(tk.END, message + '\n', 'entry-left')
         self.entry_editor.configure(state='disabled')
         self.entry_editor.see(tk.END)
@@ -119,8 +118,8 @@ class Body(tk.Frame):
                                         justify='right',
                                         background='pink', )
         self.entry_editor.tag_configure('entry-left',
-                                        justify='left',
-                                        background='#F5F5F5')
+                                        justify='left', background='#F5F5F5',
+                                        foreground='pink')
         self.entry_editor.pack(fill=tk.BOTH, side=tk.LEFT,
                                expand=True, padx=0, pady=0)
 
