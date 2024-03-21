@@ -349,7 +349,7 @@ class MainApp(tk.Frame):
                                              _msg['timestamp']))
 
         # Sort messages based on timestamp
-        all_messages.sort(key=lambda x: x[2])
+        all_messages.sort(key=lambda x: x[3])
         self.body.entry_editor.configure(state='normal')
         self.body.entry_editor.delete(1.0, tk.END)
 
